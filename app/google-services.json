@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "886693980110",
+    "firebase_url": "https://turmeric-542fe-default-rtdb.firebaseio.com",
+    "project_id": "turmeric-542fe",
+    "storage_bucket": "turmeric-542fe.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:886693980110:android:af8d54dd869a911689ad9f",
+        "android_client_info": {
+          "package_name": "com.example.socialmedia"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "886693980110-7v1ap5g52p8c9r36cmhok77ci6llms38.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.socialmedia",
+            "certificate_hash": "f4594f57413535f13dc64b2285ff2b41f42c166b"
+          }
+        },
+        {
+          "client_id": "886693980110-8ea58g3d6g24kjmots21894d2pi2fssq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBzwQ88KfVEdRUYntMiRSTMVWSnvd9-gDI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "886693980110-8ea58g3d6g24kjmots21894d2pi2fssq.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
