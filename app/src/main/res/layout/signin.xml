@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:padding="20dp"
+    android:gravity="center">
+
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        android:textColor="@color/primary"
+        android:textSize="25dp"
+        android:text="ĐĂNG KÝ"
+        android:layout_above="@+id/emailTIL"
+        android:layout_marginBottom="80dp"
+        android:textStyle="bold"/>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/emailTIL"
+        android:layout_marginBottom="20dp">
+        <EditText
+            android:textColor="@color/black"
+            android:id="@+id/emailEt"
+            android:inputType="textEmailAddress"
+            android:hint="Email (Bắt buộc)"
+            android:textSize="20dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        app:passwordToggleEnabled="true"
+        android:id="@+id/passwordTIL"
+        android:layout_below="@id/emailTIL"
+        android:layout_marginBottom="20dp">
+        <EditText
+            android:textColor="@color/black"
+            android:id="@+id/passwordEt"
+            android:inputType="textPassword"
+            android:hint="Mât khẩu (Bắt buộc)"
+            android:textSize="20dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/usernameTIL"
+        android:layout_below="@id/passwordTIL"
+        android:layout_marginBottom="20dp">
+        <EditText
+            android:textColor="@color/black"
+            android:id="@+id/usernameEt"
+            android:inputType="text|textPersonName"
+            android:hint="Tên tài khoản"
+            android:textSize="20dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/phoneTIL"
+        android:layout_below="@id/usernameTIL"
+        android:layout_marginBottom="20dp">
+        <EditText
+            android:textColor="@color/black"
+            android:id="@+id/phoneEt"
+            android:inputType="textPhonetic"
+            android:hint="Số điện thoại"
+            android:textSize="20dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <Button
+        android:id="@+id/SigninButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Đăng ký"
+        android:drawablePadding="5dp"
+        android:textSize="20dp"
+        android:layout_below="@id/phoneTIL"
+        android:layout_centerHorizontal="true"
+        android:backgroundTint="@color/secondary"
+        />
+
+    <TextView
+        android:id="@+id/subLoginText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/black"
+        android:textSize="20dp"
+        android:text="Đã có tài khoản. Nhấn"
+        android:layout_below="@+id/SigninButton"
+        android:layout_marginTop="30dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@id/subLoginText"
+        android:layout_marginStart="5dp"
+        android:layout_toEndOf="@+id/subLoginText"
+        android:text="ĐĂNG NHẬP"
+        android:textStyle="bold"
+        android:textColor="@color/primary"
+        android:textSize="20dp" />
+</RelativeLayout>
