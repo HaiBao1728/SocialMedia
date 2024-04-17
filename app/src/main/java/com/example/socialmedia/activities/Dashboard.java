@@ -16,7 +16,7 @@ public class Dashboard extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.dashboard);
 
-        actionBar = getSupportActionBar();
-        bottomNavigationView = findViewById(R.id.navigation);
+        /*actionBar = getSupportActionBar();
+        bottomNavigationView = findViewById(R.id.navigation);*/
     }
 }
