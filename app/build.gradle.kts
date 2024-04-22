@@ -33,6 +33,8 @@ android {
 
 dependencies {
 
+    implementation ("com.mikhaellopez:circularimageview:4.3.0")
+
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.activity)
