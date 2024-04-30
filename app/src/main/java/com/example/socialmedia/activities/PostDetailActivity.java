@@ -56,8 +56,8 @@ public class PostDetailActivity extends AppCompatActivity {
     LinearLayout profileLayout;
     RecyclerView recyclerView;
 
-    List<ModelComment> commentList;
-    AdapterComments adapterComments;
+    //List<ModelComment> commentList;
+    //AdapterComments adapterComments;
     //add comments views
     EditText commentEt;
     ImageButton sendBtn;
