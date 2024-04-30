@@ -12,6 +12,9 @@ playServicesBase = "18.3.0"
 firebaseDatabase = "20.3.1"
 playServicesAuth = "21.0.0"
 firebaseAuth = "22.3.1"
+firebaseStorage = "20.3.0"
+annotationJvm = "1.7.1"
+volley = "1.2.1"
 
 [libraries]
 circularimageview = { module = "com.github.AtifSayings:CircularImageView", version.ref = "circularimageview" }
@@ -26,6 +29,9 @@ play-services-base = { group = "com.google.android.gms", name = "play-services-b
 firebase-database = { group = "com.google.firebase", name = "firebase-database", version.ref = "firebaseDatabase" }
 play-services-auth = { group = "com.google.android.gms", name = "play-services-auth", version.ref = "playServicesAuth" }
 firebase-auth = { group = "com.google.firebase", name = "firebase-auth", version.ref = "firebaseAuth" }
+firebase-storage = { group = "com.google.firebase", name = "firebase-storage", version.ref = "firebaseStorage" }
+annotation-jvm = { group = "androidx.annotation", name = "annotation-jvm", version.ref = "annotationJvm" }
+volley = { group = "com.android.volley", name = "volley", version.ref = "volley" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
