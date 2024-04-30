@@ -35,7 +35,6 @@ dependencies {
 
     implementation ("com.mikhaellopez:circularimageview:4.3.0")
     implementation ("com.squareup.picasso:picasso:2.8")
-    implementation("com.github.AtifSayings:CircularImageView:1.0.2")
     implementation("com.google.android.gms:play-services-auth:20.7.0")
     implementation ("org.checkerframework:checker-qual:3.1.1")
 
@@ -48,7 +47,6 @@ dependencies {
     implementation(libs.play.services.auth)
     implementation(libs.firebase.auth)
     implementation(libs.firebase.storage)
-    implementation(libs.annotation.jvm)
     implementation(libs.volley)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
