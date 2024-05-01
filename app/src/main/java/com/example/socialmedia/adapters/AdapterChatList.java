@@ -1,11 +1,13 @@
 package com.example.socialmedia.adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.helper.widget.Layer;
@@ -13,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.socialmedia.R;
 import com.example.socialmedia.models.ModelUser;
+import com.squareup.picasso.Picasso;
 
 import java.util.HashMap;
 import java.util.List;
@@ -39,10 +42,40 @@ public class AdapterChatList extends RecyclerView.Adapter<AdapterChatList.MyHold
     public void onBindViewHolder(@NonNull MyHolder holder, int position) {
         String userid = userList.get(position).getUid();
         String userAvatar = userList.get(position).getAvatar();
-        String userCover = userList.get(position).getCover();
+        String userName = userList.get(position).getName();
         String lastMessage = lastMessageMap.get(userid);
 
+        holder.userName.setText(userName);
 
+        if (lastMessage == null || ("default").equals(lastMessage)) {
+            holder.latestMessage.setVisibility(View.GONE);
+        }
+        else {
+            holder.latestMessage.setVisibility(View.VISIBLE);
+            holder.latestMessage.setText(lastMessage);
+        }
+
+        try {
+            Picasso.get().load(userAvatar).placeholder(R.drawable.baseline_tag_faces_24).into(holder.userAvatar);
+        }
+        catch (Exception e) {
+            Picasso.get().load(R.drawable.baseline_tag_faces_24).into(holder.userAvatar);
+        }
+
+        if (userList.get(position).getOnlineStatus().equals("online")) {
+            holder.userOnlineStatus.setImageResource(R.drawable.circle_online);
+        }
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+    }
+
+    public void updateLastMessageMap(String userId, String lastMessage){
+        lastMessageMap.put(userId, lastMessage);
     }
 
     @Override
