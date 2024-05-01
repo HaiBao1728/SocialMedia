@@ -2,7 +2,6 @@ package com.example.socialmedia.activities;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.util.Patterns;
 import android.view.View;
@@ -27,7 +26,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.HashMap;
-import java.util.Objects;
 
 public class RegisterActivity extends AppCompatActivity {
     EditText emailEt, passwordEt;
@@ -133,7 +131,7 @@ public class RegisterActivity extends AppCompatActivity {
                     reference.child(uid).setValue(hashMap);
 
                     Toast.makeText(RegisterActivity.this, "Đăng kí...\n" + user.getEmail(), Toast.LENGTH_SHORT).show();
-                    startActivity(new Intent(RegisterActivity.this, Dashboard.class));
+                    startActivity(new Intent(RegisterActivity.this, DashboardActivity.class));
                     finish();
 
                 }

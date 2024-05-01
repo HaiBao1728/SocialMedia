@@ -92,7 +92,6 @@ public class AdapterPosts extends RecyclerView.Adapter<AdapterPosts.MyHolder> {
         String uName = postList.get(position).getuName();
         String uDp = postList.get(position).getuDp();
         String pId = postList.get(position).getpId();
-        //String pTitle = postList.get(position).getpTitle();
         String pDescription = postList.get(position).getpDescr();
         String pImage = postList.get(position).getpImage();
         String pTimeStamp = postList.get(position).getpTime();
@@ -105,7 +104,6 @@ public class AdapterPosts extends RecyclerView.Adapter<AdapterPosts.MyHolder> {
 
         holder.uNameTv.setText((uName));
         holder.pTimeTv.setText(pTime);
-        //holder.pTitleTv.setText(pTitle);
         holder.pDescriptionTv.setText(pDescription);
         holder.pLikesTv.setText(pLikes + " Thích");
         holder.pCommentsTv.setText(pComments + " Bình luận");
@@ -405,7 +403,7 @@ public class AdapterPosts extends RecyclerView.Adapter<AdapterPosts.MyHolder> {
 
     class MyHolder extends RecyclerView.ViewHolder {
         ImageView uPictureIv, pImageIv;
-        TextView uNameTv, pTimeTv, pTitleTv, pDescriptionTv, pLikesTv, pCommentsTv;
+        TextView uNameTv, pTimeTv, pDescriptionTv, pLikesTv, pCommentsTv;
         ImageButton moreBtn;
         Button likeBtn, commentBtn, shareBtn;
         LinearLayout profileLayout;
@@ -416,7 +414,6 @@ public class AdapterPosts extends RecyclerView.Adapter<AdapterPosts.MyHolder> {
             pImageIv = itemView.findViewById(R.id.postImage);
             uNameTv = itemView.findViewById(R.id.userName);
             pTimeTv = itemView.findViewById(R.id.postTime);
-            //pTitleTv = itemView.findViewById(R.id.pTitleTv);
             pDescriptionTv = itemView.findViewById(R.id.postDescription);
             pLikesTv = itemView.findViewById(R.id.postLikes);
             moreBtn = itemView.findViewById(R.id.moreBtn);

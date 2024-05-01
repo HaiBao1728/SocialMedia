@@ -12,6 +12,7 @@
 
     <color name="chat_color_sender">#1E88E5</color>
     <color name="chat_color_receiver">#7CB342</color>
+    <color name="online">#31a24c</color>
 
     <color name="login_background_color">#E4E7ED</color>
     <color name="primary">#FF9001</color>

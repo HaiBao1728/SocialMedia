@@ -2,11 +2,8 @@ package com.example.socialmedia.activities;
 
 import android.os.Bundle;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
+
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
@@ -20,8 +17,7 @@ import android.widget.*;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
-import android.os.Bundle;
+
 import com.google.android.gms.auth.api.identity.*;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
@@ -32,9 +28,6 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.*;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.example.socialmedia.R;
-import org.jetbrains.annotations.NotNull;
-
 import com.example.socialmedia.R;
 
 import java.util.HashMap;
@@ -224,7 +217,7 @@ public class LoginActivity extends AppCompatActivity {
                 if (task.isSuccessful()) {
                     progressDialog.dismiss();
                     FirebaseUser user = mAuth.getCurrentUser();
-                    startActivity(new Intent(LoginActivity.this, Dashboard.class));
+                    startActivity(new Intent(LoginActivity.this, DashboardActivity.class));
                     finish();
                 }
                 else {
@@ -287,7 +280,7 @@ public class LoginActivity extends AppCompatActivity {
 
                                     Toast.makeText(LoginActivity.this, "Chào, "+user.getEmail(), Toast.LENGTH_SHORT).show();
 
-                                    startActivity(new Intent(LoginActivity.this, Dashboard.class));
+                                    startActivity(new Intent(LoginActivity.this, DashboardActivity.class));
                                     finish();
                                 }
                                 else {

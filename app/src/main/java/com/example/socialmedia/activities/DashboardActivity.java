@@ -9,7 +9,7 @@ import com.example.socialmedia.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 
-public class Dashboard extends AppCompatActivity {
+public class DashboardActivity extends AppCompatActivity {
     ActionBar actionBar;
     BottomNavigationView bottomNavigationView;
     FirebaseAuth firebaseAuth;
