@@ -1,4 +1,4 @@
-package com.example.socialmedia.adapters;
+package com.example.socialmedia.models;
 
 public class ModelPost {
     String pId;

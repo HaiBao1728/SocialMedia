@@ -8,6 +8,7 @@ public class ModelUser {
     String onlineStatus;
     String avatar;
     String cover;
+    boolean isBlocked = false;
     public ModelUser() {}
     public String getName() {
         return name;
@@ -63,5 +64,13 @@ public class ModelUser {
 
     public void setCover(String cover) {
         this.cover = cover;
+    }
+
+    public boolean isBlocked() {
+        return isBlocked;
+    }
+
+    public void setBlocked(boolean blocked) {
+        isBlocked = blocked;
     }
 }

@@ -29,6 +29,7 @@ import androidx.annotation.NonNull;
 import androidx.core.content.FileProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.socialmedia.models.ModelPost;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -47,7 +48,6 @@ import com.example.socialmedia.R;
 import com.example.socialmedia.activities.AddPostActivity;
 import com.example.socialmedia.activities.PostLikedByActivity;
 import com.example.socialmedia.activities.PostDetailActivity;
-import com.example.socialmedia.activities.ThereProfileActivity;
 
 import android.text.format.DateFormat;
 import android.widget.Toast;
