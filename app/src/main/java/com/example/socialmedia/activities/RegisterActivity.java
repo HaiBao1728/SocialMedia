@@ -89,7 +89,7 @@ public class RegisterActivity extends AppCompatActivity {
                     accountName.setFocusable(true);
                 }
                 else {
-                    regisiterUser(email, password);
+                    regisiterUser(email, password, name, phone);
                 }
             }
         });
@@ -102,7 +102,7 @@ public class RegisterActivity extends AppCompatActivity {
         });
     }
 
-    private void regisiterUser(String email, String password){
+    private void regisiterUser(String email, String password, String name, String phone){
         progressDialog.show();
 
         mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
@@ -113,8 +113,6 @@ public class RegisterActivity extends AppCompatActivity {
 
                     String email = user.getEmail();
                     String uid = user.getUid();
-                    String phone = user.getPhoneNumber();
-                    String name = user.getDisplayName();
 
                     HashMap<Object, String> hashMap = new HashMap<>();
                     hashMap.put("email", email);

@@ -68,25 +68,19 @@ public class AdapterUsers extends RecyclerView.Adapter<AdapterUsers.MyHolder> {
 
         }
 
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                builder.setItems(new String[]{"Trang cá nhân", "Nhắn tin"}, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        if (which == 0) {
-                            Intent intent = new Intent(context, ThereProfileActivity.class);
-                            intent.putExtra("uid", hisUID);
-                            context.startActivity(intent);
-                        }
-                        if (which == 1) {
-                            imBlockedORNot(hisUID);
-                        }
-                    }
-                });
-                builder.create().show();
-            }
+        holder.itemView.setOnClickListener(v -> {
+            AlertDialog.Builder builder = new AlertDialog.Builder(context);
+            builder.setItems(new String[]{"Trang cá nhân", "Nhắn tin"}, (dialog, which) -> {
+//                        if (which == 0) {
+//                            Intent intent = new Intent(context, ThereProfileActivity.class);
+//                            intent.putExtra("uid", hisUID);
+//                            context.startActivity(intent);
+//                        }
+//                        if (which == 1) {
+//                            imBlockedORNot(hisUID);
+//                        }
+            });
+            builder.create().show();
         });
 
     }

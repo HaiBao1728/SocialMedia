@@ -1,7 +1,15 @@
 package com.example.socialmedia.models;
 
 public class ModelUser {
-    String name, email, search, phone, image, cover, uid, onlineStatus, typingTo;
+    String name;
+    String email;
+    String search;
+    String phone;
+    String image;
+    String cover;
+    String uid;
+    String onlineStatus;
+    String typingTo;
     boolean isBlocked = false;
 
     public ModelUser() {

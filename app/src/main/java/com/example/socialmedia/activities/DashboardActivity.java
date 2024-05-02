@@ -16,6 +16,7 @@ import com.example.socialmedia.notifications.Token;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import android.content.SharedPreferences;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
@@ -89,15 +90,15 @@ public class DashboardActivity extends AppCompatActivity {
 //                return true;
             }
             if (menuItem.getItemId() == R.id.users) {
-                actionBar.setTitle("Users");
+                actionBar.setTitle("Bạn bè");
                 UsersFragment fragment3 = new UsersFragment();
                 FragmentTransaction ft3 = getSupportFragmentManager().beginTransaction();
-                ft3.replace(R.id.container, fragment3, "");
+                ft3.replace(R.id.container, fragment3, "UsersFragment");
                 ft3.commit();
                 return true;
             }
             if (menuItem.getItemId() == R.id.chat) {
-                actionBar.setTitle("Chats");
+                actionBar.setTitle("Nhắn tin");
                 ChatListFragment fragment4 = new ChatListFragment();
                 FragmentTransaction ft4 = getSupportFragmentManager().beginTransaction();
                 ft4.replace(R.id.container, fragment4, "");
