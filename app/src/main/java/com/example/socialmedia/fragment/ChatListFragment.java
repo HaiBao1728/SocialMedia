@@ -124,6 +124,9 @@ public class ChatListFragment extends Fragment {
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (userList == null || userList.isEmpty()){
+                    return;
+                }
                 userList.clear();
                 for (DataSnapshot dataSnapshot: snapshot.getChildren()){
                     ModelUser user = dataSnapshot.getValue(ModelUser.class);
