@@ -16,9 +16,10 @@
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:id="@+id/userAvatar"
-            app:c_background_color="@null"
             android:visibility="gone"
             android:src="@drawable/baseline_tag_faces_24"/>
+            <!--app:background_color="@null"-->
+
 
         <TextView
             android:id="@+id/messageTime"

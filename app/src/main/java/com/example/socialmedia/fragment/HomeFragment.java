@@ -23,7 +23,7 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 import android.widget.Toolbar;
 
-import com.example.socialmedia.activities.Dashboard;
+import com.example.socialmedia.activities.DashboardActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -99,7 +99,7 @@ public class HomeFragment extends Fragment {
                         return false;
                     }
                 });
-                onCreateMenu(menu, menuInflater);
+
             }
 
             @Override
@@ -119,7 +119,7 @@ public class HomeFragment extends Fragment {
                     startActivity(new Intent(getActivity(), GroupCreateActivity.class));
                 }
 
-                return onMenuItemSelected(menuItem);
+                return false;
 
             }
         }, getViewLifecycleOwner(), Lifecycle.State.RESUMED);
@@ -186,12 +186,13 @@ public class HomeFragment extends Fragment {
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
-        //setHasOptionsMenu(true);
+        setHasOptionsMenu(true);
         super.onCreate(savedInstanceState);
 
     }
 
-    /*@Override
+
+    @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.main_menu, menu);
 
@@ -244,5 +245,5 @@ public class HomeFragment extends Fragment {
             startActivity(new Intent(getActivity(), GroupCreateActivity.class));
         }
         return super.onOptionsItemSelected(item);
-    }*/
+    }
 }
