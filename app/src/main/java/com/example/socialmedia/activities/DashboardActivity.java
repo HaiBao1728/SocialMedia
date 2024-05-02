@@ -11,6 +11,7 @@ import android.os.Bundle;
 
 import com.example.socialmedia.fragment.ChatListFragment;
 import com.example.socialmedia.fragment.HomeFragment;
+import com.example.socialmedia.fragment.UsersFragment;
 import com.example.socialmedia.notifications.Token;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import android.content.SharedPreferences;
@@ -88,12 +89,12 @@ public class DashboardActivity extends AppCompatActivity {
 //                return true;
             }
             if (menuItem.getItemId() == R.id.users) {
-//                actionBar.setTitle("Users");
-//                UsersFragment fragment3 = new UsersFragment();
-//                FragmentTransaction ft3 = getSupportFragmentManager().beginTransaction();
-//                ft3.replace(R.id.container, fragment3, "");
-//                ft3.commit();
-//                return true;
+                actionBar.setTitle("Users");
+                UsersFragment fragment3 = new UsersFragment();
+                FragmentTransaction ft3 = getSupportFragmentManager().beginTransaction();
+                ft3.replace(R.id.container, fragment3, "");
+                ft3.commit();
+                return true;
             }
             if (menuItem.getItemId() == R.id.chat) {
                 actionBar.setTitle("Chats");

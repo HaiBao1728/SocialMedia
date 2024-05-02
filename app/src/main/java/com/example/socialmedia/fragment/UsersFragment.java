@@ -69,8 +69,6 @@ public class UsersFragment extends Fragment {
                 menuInflater.inflate(R.menu.main_menu, menu);
 
                 menu.findItem(R.id.add_post).setVisible(false);
-                //menu.findItem(R.id.add_user).setVisible(false);
-                //menu.findItem(R.id.action_groupInfo).setVisible(false);
 
                 MenuItem item = menu.findItem(R.id.search);
                 SearchView searchView = (SearchView) MenuItemCompat.getActionView(item);
@@ -95,8 +93,6 @@ public class UsersFragment extends Fragment {
                         return false;
                     }
                 });
-                onCreateMenu(menu, menuInflater);
-
             }
 
             @Override
@@ -106,14 +102,13 @@ public class UsersFragment extends Fragment {
                 if (id == R.id.logout) {
                     firebaseAuth.signOut();
                     checkUserStatus();
+                    return true;
                 }else if(id==R.id.settings){
                     startActivity(new Intent(getActivity(), SettingsActivity.class));
-                }/*else if(id==R.id.add_group_chat){
-                    startActivity(new Intent(getActivity(), GroupCreateActivity.class));
-                }*/
+                    return true;
+                }
 
-                return onMenuItemSelected(menuItem);
-
+                return false;
             }
         }, getViewLifecycleOwner(), Lifecycle.State.RESUMED);
 

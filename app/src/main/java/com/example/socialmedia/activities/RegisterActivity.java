@@ -43,9 +43,9 @@ public class RegisterActivity extends AppCompatActivity {
         setContentView(R.layout.signin);
 
         ActionBar actionBar = getSupportActionBar();
-        actionBar.setTitle("Tạo tài khoản Turmeric");
-        actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setDisplayShowHomeEnabled(true);
+        if (actionBar != null) {
+            actionBar.hide();
+        }
 
         emailEt = findViewById((R.id.emailEt));
         passwordEt = findViewById(R.id.passwordEt);

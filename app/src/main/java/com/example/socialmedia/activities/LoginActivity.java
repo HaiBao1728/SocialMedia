@@ -50,13 +50,10 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         //EdgeToEdge.enable(this);
         setContentView(R.layout.activity_login);
-
-        //Actionbar and its title
         ActionBar actionBar = getSupportActionBar();
-        actionBar.setTitle("Create new account with SoMe");
-        //enable back button
-        actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setDisplayShowHomeEnabled(true);
+        if (actionBar != null) {
+            actionBar.hide();
+        }
 
         emailEt = findViewById(R.id.emailEt);
         passwordEt = findViewById(R.id.passwordEt);

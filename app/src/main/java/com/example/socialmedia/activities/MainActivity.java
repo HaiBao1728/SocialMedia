@@ -6,6 +6,7 @@ import android.view.View;
 import android.widget.Button;
 
 import androidx.activity.EdgeToEdge;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -24,6 +25,11 @@ public class MainActivity extends AppCompatActivity {
 
         btnRegister = findViewById(R.id.register_id);
         btnLogin = findViewById(R.id.btn_login);
+
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.hide();
+        }
 
         btnRegister.setOnClickListener(new View.OnClickListener() {
             @Override
