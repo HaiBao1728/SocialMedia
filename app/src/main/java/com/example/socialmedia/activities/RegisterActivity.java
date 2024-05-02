@@ -125,7 +125,7 @@ public class RegisterActivity extends AppCompatActivity {
                     hashMap.put("cover", "");
 
                     FirebaseDatabase database = FirebaseDatabase.getInstance();
-                    DatabaseReference reference = database.getReference("User");
+                    DatabaseReference reference = database.getReference("Users");
                     reference.child(uid).setValue(hashMap);
 
                     Toast.makeText(RegisterActivity.this, "Đăng kí...\n" + user.getEmail(), Toast.LENGTH_SHORT).show();

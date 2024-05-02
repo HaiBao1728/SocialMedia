@@ -1,7 +1,13 @@
 package com.example.socialmedia.activities;
 
+import android.app.Activity;
 import android.os.Bundle;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.IntentSenderRequest;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.AlertDialog;
@@ -11,6 +17,7 @@ import android.content.Intent;
 import android.content.IntentSender;
 import android.graphics.Color;
 import android.text.InputType;
+import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.*;
@@ -19,6 +26,8 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 
 import com.google.android.gms.auth.api.identity.*;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -111,14 +120,76 @@ public class LoginActivity extends AppCompatActivity {
                 .setGoogleIdTokenRequestOptions(BeginSignInRequest.GoogleIdTokenRequestOptions.builder()
                         .setSupported(true)
                         // Your server's client ID, not your Android client ID.
-                        .setServerClientId(getString(R.string.default_web_client_id))
+                        .setServerClientId(getString(R.string.web_client_id))
                         // Only show accounts previously used to sign in.
                         .setFilterByAuthorizedAccounts(false)
                         .build())
                 .build();
 
         oneTapClient = Identity.getSignInClient(LoginActivity.this);
+        ActivityResultLauncher<IntentSenderRequest> intentSender = registerForActivityResult(new ActivityResultContracts.StartIntentSenderForResult(), new ActivityResultCallback<ActivityResult>() {
+            @Override
+            public void onActivityResult(ActivityResult result) {
+                if (result.getResultCode() == Activity.RESULT_OK){
+                    try{
+                        SignInCredential credential = oneTapClient.getSignInCredentialFromIntent(result.getData());
+                        String idToken = credential.getGoogleIdToken();
 
+                        if (idToken != null){
+                            AuthCredential firebaseCredential = GoogleAuthProvider.getCredential(idToken, null);
+                            mAuth.signInWithCredential(firebaseCredential).addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
+                                @Override
+                                public void onComplete(@NonNull Task<AuthResult> task) {
+                                    Toast.makeText(LoginActivity.this, "Hello world", Toast.LENGTH_LONG).show();
+                                    if (task.isSuccessful()){
+                                        FirebaseUser user = mAuth.getCurrentUser();
+
+                                        if (task.getResult().getAdditionalUserInfo().isNewUser()){
+                                            String email = user.getEmail();
+                                            String uid = user.getUid();
+                                            String name = user.getDisplayName();
+                                            String phone = user.getPhoneNumber();
+
+                                            HashMap<Object, String> hashMap = new HashMap<>();
+
+                                            hashMap.put("email", email);
+                                            hashMap.put("uid", uid);
+                                            hashMap.put("name", name);
+                                            hashMap.put("onlineStatus", "online");
+                                            hashMap.put("typingTo", "noOne");
+                                            hashMap.put("phone", phone);
+                                            hashMap.put("image", "");
+                                            hashMap.put("cover", "");
+
+                                            FirebaseDatabase database = FirebaseDatabase.getInstance();
+                                            DatabaseReference reference = database.getReference("Users");
+                                            reference.child(uid).setValue(hashMap);
+
+                                        }
+
+                                        Toast.makeText(LoginActivity.this, "Chào, "+user.getEmail(), Toast.LENGTH_SHORT).show();
+
+                                        startActivity(new Intent(LoginActivity.this, DashboardActivity.class));
+                                        finish();
+                                    }
+                                    else {
+                                        Toast.makeText(LoginActivity.this, "Đăng nhập không thành công", Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            }).addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    Toast.makeText(LoginActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                                    Log.d("1",e.toString());
+                                }
+                            });
+                        }
+                    }catch (ApiException ex){
+                        ex.printStackTrace();
+                    }
+                }
+            }
+        });
         gLoginBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -126,21 +197,14 @@ public class LoginActivity extends AppCompatActivity {
                         .addOnSuccessListener(LoginActivity.this, new OnSuccessListener<BeginSignInResult>() {
                             @Override
                             public void onSuccess(BeginSignInResult result) {
-                                try {
-                                    startIntentSenderForResult(
-                                            result.getPendingIntent().getIntentSender(), REQ_ONE_TAP,
-                                            null, 0, 0, 0);
-                                } catch (IntentSender.SendIntentException e) {
-                                    Toast.makeText(LoginActivity.this,e.getMessage(),Toast.LENGTH_SHORT).show();
-                                }
+                                IntentSenderRequest intentSenderRequest = new IntentSenderRequest.Builder(result.getPendingIntent().getIntentSender()).build();
+                                intentSender.launch(intentSenderRequest);
                             }
                         })
                         .addOnFailureListener(LoginActivity.this, new OnFailureListener() {
                             @Override
                             public void onFailure(@NonNull Exception e) {
-                                // No saved credentials found. Launch the One Tap sign-up flow, or
-                                // do nothing and continue presenting the signed-out UI.
-                                Toast.makeText(LoginActivity.this,"No saved credentials found...",Toast.LENGTH_SHORT).show();
+                                Toast.makeText(LoginActivity.this,e.toString(),Toast.LENGTH_SHORT).show();
                             }
                         });
             }
@@ -293,7 +357,7 @@ public class LoginActivity extends AppCompatActivity {
                     }
                 }
                 catch (ApiException e){
-
+                    e.printStackTrace();
                 }
                 break;
         }

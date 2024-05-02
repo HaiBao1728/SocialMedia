@@ -3,4 +3,5 @@
     <string name="default_web_client_id">886693980110-8ea58g3d6g24kjmots21894d2pi2fssq.apps.googleusercontent.com</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="key_message">AAAAznMUZ84:APA91bHRW26BBIqmL6VZfrqA2JAbWWY95J1HqNuoFDZExkRR8iHhbKWg4_J4gcr9Vc8oeTqwsCNvoTUGe3zlEYZJd5zj__d5UALw4RMoJeTAJ7-SnRuqc5-E6UoWX_voBu88L1bLSCwm</string>
+    <string name="web_client_id">579825688273-ua952q3sgg9af63qgv6k37idpssvj5r4.apps.googleusercontent.com</string>
 </resources>
