@@ -7,7 +7,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SearchView;
 import androidx.core.view.MenuItemCompat;
+import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Lifecycle;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -19,7 +21,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
+import android.widget.Toolbar;
 
+import com.example.socialmedia.activities.Dashboard;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -33,7 +37,7 @@ import com.example.socialmedia.activities.AddPostActivity;
 import com.example.socialmedia.activities.GroupCreateActivity;
 import com.example.socialmedia.activities.SettingsActivity;
 import com.example.socialmedia.adapters.AdapterPosts;
-import com.example.socialmedia.adapters.ModelPost;
+import com.example.socialmedia.models.ModelPost;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,7 +54,7 @@ public class HomeFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
         firebaseAuth = FirebaseAuth.getInstance();
@@ -62,6 +66,63 @@ public class HomeFragment extends Fragment {
 
         postList = new ArrayList<>();
         loadPosts();
+        requireActivity().addMenuProvider(new MenuProvider() {
+            @Override
+            public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
+                menuInflater.inflate(R.menu.main_menu, menu);
+
+                menu.findItem(R.id.add_group_chat).setVisible(false);
+                menu.findItem(R.id.add_user).setVisible(false);
+                menu.findItem(R.id.action_groupInfo).setVisible(false);
+
+                MenuItem item = menu.findItem(R.id.search);
+                SearchView searchView = (SearchView) MenuItemCompat.getActionView(item);
+
+                searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+                    @Override
+                    public boolean onQueryTextSubmit(String query) {
+                        if (!TextUtils.isEmpty(query)) {
+                            searchPosts(query);
+                        } else {
+                            loadPosts();
+                        }
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onQueryTextChange(String newText) {
+                        if (!TextUtils.isEmpty(newText)) {
+                            searchPosts(newText);
+                        } else {
+                            loadPosts();
+                        }
+                        return false;
+                    }
+                });
+                onCreateMenu(menu, menuInflater);
+            }
+
+            @Override
+            public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
+
+                int id = menuItem.getItemId();
+                if (id == R.id.logout) {
+                    firebaseAuth.signOut();
+                    checkUserStatus();
+                } else if (id == R.id.add_post) {
+                    startActivity(new Intent(getActivity(), AddPostActivity.class));
+                } else if (id == R.id.settings) {
+                    //go to settings activity
+                    startActivity(new Intent(getActivity(), SettingsActivity.class));
+                }else if(id==R.id.add_group_chat){
+                    //got to settings activity
+                    startActivity(new Intent(getActivity(), GroupCreateActivity.class));
+                }
+
+                return onMenuItemSelected(menuItem);
+
+            }
+        }, getViewLifecycleOwner(), Lifecycle.State.RESUMED);
 
         return view;
     }
@@ -125,11 +186,12 @@ public class HomeFragment extends Fragment {
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
-        setHasOptionsMenu(true);
+        //setHasOptionsMenu(true);
         super.onCreate(savedInstanceState);
+
     }
 
-    @Override
+    /*@Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.main_menu, menu);
 
@@ -182,5 +244,5 @@ public class HomeFragment extends Fragment {
             startActivity(new Intent(getActivity(), GroupCreateActivity.class));
         }
         return super.onOptionsItemSelected(item);
-    }
+    }*/
 }
