@@ -49,40 +49,30 @@ public class AdapterUsers extends RecyclerView.Adapter<AdapterUsers.MyHolder> {
     @NonNull
     @Override
     public MyHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.row_users, parent, false);
+        View view = LayoutInflater.from(context).inflate(R.layout.user, parent, false);
         return new MyHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull MyHolder holder, final int position) {
         String hisUID = userList.get(position).getUid();
-        String userImage = userList.get(position).getAvatar();
+        String userImage = userList.get(position).getImage();
         String userName = userList.get(position).getName();
         String userEmail = userList.get(position).getEmail();
 
-        holder.mNameTv.setText(userName);
-        holder.mEmailTv.setText(userEmail);
+        holder.userName.setText(userName);
+        holder.userEmail.setText(userEmail);
         try {
-            Picasso.get().load(userImage).placeholder(R.drawable.ic_face_light).into(holder.mAvatarIv);
+            Picasso.get().load(userImage).placeholder(R.drawable.ic_face_light).into(holder.userAvatar);
         } catch (Exception e) {
 
         }
 
-        holder.blockIv.setImageResource(R.drawable.ic_unblocked_green);
-        //check if each user if is blocked or not
-        checkIsBlocked(hisUID, holder, position);
-
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                Toast.makeText(context, "" + userEmail, Toast.LENGTH_SHORT).show();
-/*                - Click user from user list to start chatting/messaging
-                  - Start activity by putting UID of receiver
-                  - we'll use that UID to identify the we are gonna chat  */
-
-
                 AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                builder.setItems(new String[]{"Profile", "Chat"}, new DialogInterface.OnClickListener() {
+                builder.setItems(new String[]{"Trang cá nhân", "Nhắn tin"}, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         if (which == 0) {
@@ -96,22 +86,6 @@ public class AdapterUsers extends RecyclerView.Adapter<AdapterUsers.MyHolder> {
                     }
                 });
                 builder.create().show();
-            }
-        });
-
-        //click to block, unblock user
-        holder.blockIv.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-
-                if (userList.get(holder.getAdapterPosition()).isBlocked()){
-                    unBlockUser(hisUID);
-                }
-                else {
-                    blockUser(hisUID);
-                }
-
-
             }
         });
 
@@ -158,7 +132,6 @@ public class AdapterUsers extends RecyclerView.Adapter<AdapterUsers.MyHolder> {
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         for (DataSnapshot ds: snapshot.getChildren()){
                             if (ds.exists()){
-                                holder.blockIv.setImageResource(R.drawable.ic_blocked_red);
                                 userList.get(position).setBlocked(true);
                             }
                         }
@@ -240,16 +213,16 @@ public class AdapterUsers extends RecyclerView.Adapter<AdapterUsers.MyHolder> {
     }
 
     class MyHolder extends RecyclerView.ViewHolder {
-        ImageView mAvatarIv, blockIv;
-        TextView mNameTv, mEmailTv;
+        ImageView userAvatar;
+        TextView userName;
+        TextView userEmail;
 
         public MyHolder(@NonNull View itemView) {
             super(itemView);
 
-            mAvatarIv = itemView.findViewById(R.id.avatarIv);
-            blockIv = itemView.findViewById(R.id.blockIv);
-            mNameTv = itemView.findViewById(R.id.nameTv);
-            mEmailTv = itemView.findViewById(R.id.emailTv);
+            userAvatar = itemView.findViewById(R.id.userAvatar);
+            userName = itemView.findViewById(R.id.userName);
+            userEmail = itemView.findViewById(R.id.userEmail);
 
         }
     }
