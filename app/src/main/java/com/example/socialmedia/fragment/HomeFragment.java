@@ -71,9 +71,9 @@ public class HomeFragment extends Fragment {
             public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
                 menuInflater.inflate(R.menu.main_menu, menu);
 
-                menu.findItem(R.id.add_group_chat).setVisible(false);
-                menu.findItem(R.id.add_user).setVisible(false);
-                menu.findItem(R.id.action_groupInfo).setVisible(false);
+                //menu.findItem(R.id.add_group_chat).setVisible(false);
+                //menu.findItem(R.id.users).setVisible(false);
+                //menu.findItem(R.id.action_groupInfo).setVisible(false);
 
                 MenuItem item = menu.findItem(R.id.search);
                 SearchView searchView = (SearchView) MenuItemCompat.getActionView(item);
@@ -114,10 +114,10 @@ public class HomeFragment extends Fragment {
                 } else if (id == R.id.settings) {
                     //go to settings activity
                     startActivity(new Intent(getActivity(), SettingsActivity.class));
-                }else if(id==R.id.add_group_chat){
+                }/*else if(id==R.id.add_group_chat){
                     //got to settings activity
                     startActivity(new Intent(getActivity(), GroupCreateActivity.class));
-                }
+                }*/
 
                 return false;
 
@@ -186,19 +186,19 @@ public class HomeFragment extends Fragment {
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
-        setHasOptionsMenu(true);
+        //setHasOptionsMenu(true);
         super.onCreate(savedInstanceState);
 
     }
 
 
-    @Override
+    /*@Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.main_menu, menu);
 
-        menu.findItem(R.id.add_group_chat).setVisible(false);
-        menu.findItem(R.id.add_user).setVisible(false);
-        menu.findItem(R.id.action_groupInfo).setVisible(false);
+        //menu.findItem(R.id.add_group_chat).setVisible(false);
+        //menu.findItem(R.id.users).setVisible(false);
+        //menu.findItem(R.id.action_groupInfo).setVisible(false);
 
         MenuItem item = menu.findItem(R.id.search);
         SearchView searchView = (SearchView) MenuItemCompat.getActionView(item);
@@ -240,10 +240,10 @@ public class HomeFragment extends Fragment {
         } else if (id == R.id.settings) {
             //go to settings activity
             startActivity(new Intent(getActivity(), SettingsActivity.class));
-        }else if(id==R.id.add_group_chat){
+        }*//*else if(id==R.id.add_group_chat){
             //got to settings activity
             startActivity(new Intent(getActivity(), GroupCreateActivity.class));
-        }
+        }*//*
         return super.onOptionsItemSelected(item);
-    }
+    }*/
 }

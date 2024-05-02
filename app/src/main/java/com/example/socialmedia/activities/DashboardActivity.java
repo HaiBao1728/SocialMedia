@@ -8,6 +8,7 @@ import android.os.Bundle;
 
 import com.example.socialmedia.fragment.HomeFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.example.socialmedia.R;
 //import com.example.socialmedia.fragment.GroupChatsFragment;
