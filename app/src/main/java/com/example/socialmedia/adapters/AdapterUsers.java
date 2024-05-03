@@ -2,8 +2,8 @@ package com.example.socialmedia.adapters;
 
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +14,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.socialmedia.activities.DashboardActivity;
 import com.example.socialmedia.models.ModelUser;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -26,7 +27,6 @@ import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 import com.example.socialmedia.R;
 import com.example.socialmedia.activities.ChatActivity;
-import com.example.socialmedia.activities.ThereProfileActivity;
 
 import java.util.HashMap;
 import java.util.List;
@@ -37,7 +37,7 @@ public class AdapterUsers extends RecyclerView.Adapter<AdapterUsers.MyHolder> {
     //for getting current user's uid
     FirebaseAuth firebaseAuth;
     String myUid;
-
+    String block = "";
     public AdapterUsers(Context context, List<ModelUser> userList) {
         this.context = context;
         this.userList = userList;
@@ -49,46 +49,53 @@ public class AdapterUsers extends RecyclerView.Adapter<AdapterUsers.MyHolder> {
     @NonNull
     @Override
     public MyHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.user, parent, false);
+        View view = LayoutInflater.from(context).inflate(R.layout.row_users, parent, false);
         return new MyHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull MyHolder holder, final int position) {
-        String hisUID = userList.get(position).getUid();
+        String userID = userList.get(position).getUid();
         String userImage = userList.get(position).getImage();
         String userName = userList.get(position).getName();
         String userEmail = userList.get(position).getEmail();
 
-        holder.userName.setText(userName);
-        holder.userEmail.setText(userEmail);
+        holder.nameTv.setText(userName);
+        holder.emailTv.setText(userEmail);
         try {
-            Picasso.get().load(userImage).placeholder(R.drawable.ic_face_light).into(holder.userAvatar);
-        } catch (Exception e) {
+            Picasso.get().load(userImage).placeholder(R.drawable.ic_face_light).into(holder.avatarIv);
+        } catch (Exception ignored) {
 
         }
-
+        holder.blockTv.setText("");
+        block = "Chặn";
+        checkIsBlocked(userID,holder,position);
         holder.itemView.setOnClickListener(v -> {
             AlertDialog.Builder builder = new AlertDialog.Builder(context);
-            builder.setItems(new String[]{"Trang cá nhân", "Nhắn tin"}, (dialog, which) -> {
-//                        if (which == 0) {
-//                            Intent intent = new Intent(context, ThereProfileActivity.class);
-//                            intent.putExtra("uid", hisUID);
-//                            context.startActivity(intent);
-//                        }
-//                        if (which == 1) {
-//                            imBlockedORNot(hisUID);
-//                        }
+            builder.setItems(new String[]{"Trang cá nhân", "Nhắn tin", block}, (dialog, which) -> {
+                Log.d("1",block);
+                        if (which == 0) {
+                            profileBlockOrNot(userID);
+                        }
+                        if (which == 1) {
+                            blockedORNot(userID);
+                        }
+                        if (which == 2){
+                            if (userList.get(holder.getAdapterPosition()).isBlocked()){
+                                unBlockUser(userID);
+                            }
+                            else {
+                                blockUser(userID);
+                            }
+                            notifyItemChanged(holder.getAdapterPosition());
+                        }
             });
             builder.create().show();
         });
 
     }
 
-    private void imBlockedORNot(String hisUID){
-        //first check if sender(current user) is blocked by receiver or not
-        //logic: if uid of the sender( current user) exists in "BlockedUser" of receiver then sender(current user) is blocked, otherwise not
-        //if blocked than just display a message e.g you are blocked by that user, can't send message
+    private void blockedORNot(String hisUID){
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Users");
         ref.child(hisUID).child("BlockedUsers").orderByChild("uid").equalTo(myUid)
                 .addValueEventListener(new ValueEventListener() {
@@ -96,12 +103,10 @@ public class AdapterUsers extends RecyclerView.Adapter<AdapterUsers.MyHolder> {
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         for (DataSnapshot ds: snapshot.getChildren()){
                             if (ds.exists()){
-                                Toast.makeText(context, "You're blocked by that user, cant send message", Toast.LENGTH_SHORT).show();
-                                //blocked, don't proceed further
+                                Toast.makeText(context, "Bạn đang bị chặn bởi người dùng đó không thể nhắn tin.", Toast.LENGTH_SHORT).show();
                                 return;
                             }
                         }
-                        //not blocked, start activity
                         Intent intent = new Intent(context, ChatActivity.class);
                         intent.putExtra("hisUid", hisUID);
                         context.startActivity(intent);
@@ -112,13 +117,33 @@ public class AdapterUsers extends RecyclerView.Adapter<AdapterUsers.MyHolder> {
 
                     }
                 });
+    }
 
+    private void profileBlockOrNot(String hisUID){
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Users");
+        ref.child(hisUID).child("BlockedUsers").orderByChild("uid").equalTo(myUid)
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        for (DataSnapshot ds: snapshot.getChildren()){
+                            if (ds.exists()){
+                                Toast.makeText(context, "Bạn đang bị chặn bởi người dùng đó không thể xem trang cá nhân.", Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+                        }
+//                        Intent intent = new Intent(context, ThereProfileActivity.class);
+//                        intent.putExtra("uid", hisUID);
+//                        context.startActivity(intent);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
     }
 
     private void checkIsBlocked(String hisUID, MyHolder holder, int position) {
-        //check each user, if blocked or not
-        //if uid of the user exists in "BlockedUser" then that user is blocked, otherwise not
-
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Users");
         ref.child(myUid).child("BlockedUsers").orderByChild("uid").equalTo(hisUID)
                 .addValueEventListener(new ValueEventListener() {
@@ -126,7 +151,9 @@ public class AdapterUsers extends RecyclerView.Adapter<AdapterUsers.MyHolder> {
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         for (DataSnapshot ds: snapshot.getChildren()){
                             if (ds.exists()){
+                                holder.blockTv.setText("Đang chặn");
                                 userList.get(position).setBlocked(true);
+                                block = "Bỏ chặn";
                             }
                         }
                     }
@@ -140,9 +167,6 @@ public class AdapterUsers extends RecyclerView.Adapter<AdapterUsers.MyHolder> {
     }
 
     private void blockUser(String hisUID) {
-        //block the user, by adding uid current user's "BlockedUsers" node
-
-        //put value in hasmap to put in db
         HashMap<String, String> hashMap = new HashMap<>();
         hashMap.put("uid", hisUID);
 
@@ -151,22 +175,18 @@ public class AdapterUsers extends RecyclerView.Adapter<AdapterUsers.MyHolder> {
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void unused) {
-                        //blocked successfully
-                        Toast.makeText(context, "Blocked Successfully...", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, "Chặn thành công!", Toast.LENGTH_SHORT).show();
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        //failed to block
-                        Toast.makeText(context, "Failed"+e.getMessage(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
     }
 
     private void unBlockUser(String hisUID) {
-        //unblock the user, by removing uid from current user's "blockedUsers" node
-
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Users");
         ref.child(myUid).child("BlockedUsers").orderByChild("uid").equalTo(hisUID)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
@@ -174,20 +194,17 @@ public class AdapterUsers extends RecyclerView.Adapter<AdapterUsers.MyHolder> {
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         for (DataSnapshot ds: snapshot.getChildren()){
                             if (ds.exists()){
-                                //remove blocked user data from current user's BlockUsers List
                                 ds.getRef().removeValue()
                                         .addOnSuccessListener(new OnSuccessListener<Void>() {
                                             @Override
                                             public void onSuccess(Void unused) {
-                                                //unblock successfully
-                                                Toast.makeText(context, "Unblocked Successfully...", Toast.LENGTH_SHORT).show();
+                                                Toast.makeText(context, "Gỡ chặn thành công!", Toast.LENGTH_SHORT).show();
                                             }
                                         })
                                         .addOnFailureListener(new OnFailureListener() {
                                             @Override
                                             public void onFailure(@NonNull Exception e) {
-                                                //failed to unblock
-                                                Toast.makeText(context, "Failed"+e.getMessage(), Toast.LENGTH_SHORT).show();
+                                                Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show();
                                             }
                                         });
                             }
@@ -207,17 +224,18 @@ public class AdapterUsers extends RecyclerView.Adapter<AdapterUsers.MyHolder> {
     }
 
     class MyHolder extends RecyclerView.ViewHolder {
-        ImageView userAvatar;
-        TextView userName;
-        TextView userEmail;
+        ImageView avatarIv;
+        TextView nameTv;
+        TextView emailTv;
+        TextView blockTv;
 
         public MyHolder(@NonNull View itemView) {
             super(itemView);
 
-            userAvatar = itemView.findViewById(R.id.userAvatar);
-            userName = itemView.findViewById(R.id.userName);
-            userEmail = itemView.findViewById(R.id.userEmail);
-
+            avatarIv = itemView.findViewById(R.id.avatarIv);
+            nameTv = itemView.findViewById(R.id.nameTv);
+            emailTv = itemView.findViewById(R.id.emailTv);
+            blockTv = itemView.findViewById(R.id.blockTv);
         }
     }
 }

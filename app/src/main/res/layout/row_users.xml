@@ -13,15 +13,14 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginTop="20dp">
+        android:orientation="horizontal">
 
         <com.mikhaellopez.circularimageview.CircularImageView
             android:id="@+id/avatarIv"
             android:layout_width="70dp"
             android:layout_height="70dp"
             android:layout_marginRight="20dp"
-            android:src="@drawable/ic_face_light" />
+            android:src="@drawable/baseline_tag_faces_24" />
 
         <LinearLayout
             android:layout_weight="1"
@@ -35,24 +34,24 @@
                 android:layout_height="wrap_content"
                 android:text="Person name"
                 android:textColor="@color/black"
-                android:textSize="18sp"></TextView>
+                android:textSize="18sp" />
 
             <TextView
                 android:id="@+id/emailTv"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Person name"
-                android:textColor="@color/black"
-                ></TextView>
+                android:textColor="@color/black" />
+
+            <TextView
+                android:id="@+id/blockTv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Block"
+                android:textStyle="bold"
+                android:textColor="@color/red" />
 
         </LinearLayout>
 
-        <!--add icons to indicate blocked/unblocked-->
-        <ImageView
-            android:id="@+id/blockIv"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_unblocked_green"
-            android:layout_gravity="center_horizontal"/>
     </LinearLayout>
 </androidx.cardview.widget.CardView>
