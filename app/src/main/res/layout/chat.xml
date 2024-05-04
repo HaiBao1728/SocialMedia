@@ -17,6 +17,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:gravity="center"
             android:orientation="horizontal">
 
             <com.mikhaellopez.circularimageview.CircularImageView
@@ -56,6 +57,16 @@
                     />
 
             </LinearLayout>
+
+            <TextView
+                android:id="@+id/blockTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Chặn"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                android:layout_marginRight="10dp"
+                />
 
         </LinearLayout>
 

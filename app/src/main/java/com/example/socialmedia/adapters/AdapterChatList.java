@@ -2,6 +2,7 @@ package com.example.socialmedia.adapters;
 
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +15,7 @@ import androidx.constraintlayout.helper.widget.Layer;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.socialmedia.R;
+import com.example.socialmedia.activities.ChatActivity;
 import com.example.socialmedia.models.ModelUser;
 import com.squareup.picasso.Picasso;
 
@@ -34,7 +36,7 @@ public class AdapterChatList extends RecyclerView.Adapter<AdapterChatList.MyHold
     @NonNull
     @Override
     public MyHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(context).inflate(R.layout.chat_user_list, parent,false);
+        View v = LayoutInflater.from(context).inflate(R.layout.chat_user, parent,false);
         return new MyHolder(v);
     }
 
@@ -44,7 +46,6 @@ public class AdapterChatList extends RecyclerView.Adapter<AdapterChatList.MyHold
         String userAvatar = userList.get(position).getImage();
         String userName = userList.get(position).getName();
         String lastMessage = lastMessageMap.get(userid);
-
         holder.userName.setText(userName);
 
         if (lastMessage == null || ("default").equals(lastMessage)) {
@@ -56,10 +57,10 @@ public class AdapterChatList extends RecyclerView.Adapter<AdapterChatList.MyHold
         }
 
         try {
-            Picasso.get().load(userAvatar).placeholder(R.drawable.baseline_tag_faces_24).into(holder.userAvatar);
+            Picasso.get().load(userAvatar).placeholder(R.drawable.ic_face_light).into(holder.userAvatar);
         }
         catch (Exception e) {
-            Picasso.get().load(R.drawable.baseline_tag_faces_24).into(holder.userAvatar);
+
         }
 
         if (userList.get(position).getOnlineStatus().equals("online")) {
@@ -69,7 +70,9 @@ public class AdapterChatList extends RecyclerView.Adapter<AdapterChatList.MyHold
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                Intent intent = new Intent(context, ChatActivity.class);
+                intent.putExtra("hisUid", userid);
+                context.startActivity(intent);
             }
         });
     }

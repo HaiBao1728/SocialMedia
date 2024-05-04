@@ -127,7 +127,7 @@ public class UsersFragment extends Fragment {
                 for (DataSnapshot ds : snapshot.getChildren()) {
                     try {
                         ModelUser modelUser = ds.getValue(ModelUser.class);
-                        if (modelUser != null && !modelUser.getUid().equals(fUser.getUid())); {
+                        if (modelUser != null && !modelUser.getUid().equals(fUser.getUid())){
                             if (modelUser.getName().toLowerCase().contains(query.toLowerCase()) || modelUser.getEmail().toLowerCase().contains(query.toLowerCase())) {
                                 userList.add(modelUser);
                             }

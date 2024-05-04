@@ -2,6 +2,7 @@ package com.example.socialmedia.fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -70,6 +71,7 @@ public class ChatListFragment extends Fragment {
             public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
                 menuInflater.inflate(R.menu.main_menu, menu);
                 menu.findItem(R.id.add_post).setVisible(false);
+                menu.findItem(R.id.search).setVisible(false);
             }
 
             @Override
@@ -110,8 +112,7 @@ public class ChatListFragment extends Fragment {
     private void checkUserStatus() {
         FirebaseUser user = mAuth.getCurrentUser();
         if (user != null) {
-            //user is signed in stay here
-            //set email of logged-in user
+
         } else {
             startActivity(new Intent(getActivity(), MainActivity.class));
             getActivity().finish();
@@ -119,24 +120,20 @@ public class ChatListFragment extends Fragment {
     }
 
     private void loadChats() {
-        userChatList = new ArrayList<>();
+        userList = new ArrayList<>();
         databaseReference = FirebaseDatabase.getInstance().getReference("Users");
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (userList == null || userList.isEmpty()){
-                    return;
-                }
                 userList.clear();
-                for (DataSnapshot dataSnapshot: snapshot.getChildren()){
-                    ModelUser user = dataSnapshot.getValue(ModelUser.class);
+                for (DataSnapshot ds: snapshot.getChildren()){
+                    ModelUser user = ds.getValue(ModelUser.class);
                     for(ModelChatList chatlist: userChatList){
-                        if (user.getUid() !=null && user.getUid().equals(chatlist.getId())){
+                        if (user.getUid() != null && user.getUid().equals(chatlist.getId())){
                             userList.add(user);
                             break;
                         }
                     }
-
                     adapterChatList = new AdapterChatList(getContext(), userList);
                     recyclerView.setAdapter(adapterChatList);
                     for (int i=0; i<userList.size(); i++){
@@ -150,12 +147,11 @@ public class ChatListFragment extends Fragment {
 
             }
         });
-
     }
 
     private void lastMessage(String userId) {
-        databaseReference = FirebaseDatabase.getInstance().getReference("Chats");
-        databaseReference.addValueEventListener(new ValueEventListener() {
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Chats");
+        reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 String theLastMessage = "default";
@@ -171,7 +167,7 @@ public class ChatListFragment extends Fragment {
                     }
                     if (chat.getReceiver().equals(currentUser.getUid()) && chat.getSender().equals(userId) || chat.getReceiver().equals(userId) && chat.getSender().equals(currentUser.getUid())){
                         if ("image".equals(chat.getType())){
-                            theLastMessage = "Sent a photo";
+                            theLastMessage = "Đã gửi một hình ảnh";
                         }
                         else {
                             theLastMessage = chat.getMessage();
@@ -180,7 +176,6 @@ public class ChatListFragment extends Fragment {
                 }
                 adapterChatList.updateLastMessageMap(userId, theLastMessage);
                 adapterChatList.notifyDataSetChanged();
-
             }
 
             @Override

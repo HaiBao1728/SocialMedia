@@ -67,7 +67,7 @@
         android:layout_height="wrap_content"
         android:gravity="end"
         android:textAlignment="textEnd"
-        android:text="delivered" />
+        android:text="Đã gửi" />
 
 
 </LinearLayout>

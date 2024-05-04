@@ -38,6 +38,7 @@ dependencies {
     implementation ("com.squareup.picasso:picasso:2.8")
     implementation("com.google.android.gms:play-services-auth:20.7.0")
     implementation ("org.checkerframework:checker-qual:3.1.1")
+    implementation ("com.google.code.gson:gson:2.10.1")
 
     implementation(libs.appcompat)
     implementation(libs.material)
