@@ -1,21 +1,32 @@
 package com.example.socialmedia.adapters;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.text.format.DateFormat;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.socialmedia.R;
 import com.example.socialmedia.models.ModelChat;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
 import java.util.Calendar;
@@ -78,8 +89,65 @@ public class AdapterChat extends RecyclerView.Adapter<AdapterChat.MyHolder> {
 
         }
 
-        if(position < getItemCount() - 1){
-            myHolder.isSeen.setVisibility(View.INVISIBLE);
+        if (myHolder.messageLayout != null) {
+            myHolder.messageLayout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                    builder.setTitle("Xoá tin nhắn");
+                    TextView messageTextView = new TextView(context);
+                    messageTextView.setText("Bạn có chắc muốn xoá tin nhắn này?");
+                    messageTextView.setTextSize(16);
+                    messageTextView.setTextColor(ContextCompat.getColor(context, R.color.black));
+                    messageTextView.setGravity(Gravity.CENTER);
+                    builder.setView(messageTextView);
+
+                    builder.setPositiveButton("Xoá", (dialog, which) -> {
+                        String myUID = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
+                        int position1 = myHolder.getAdapterPosition();
+                        if (position1 != RecyclerView.NO_POSITION) {
+                            String msgTimeStamp = chatList.get(position1).getTimeStamp();
+                            DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference("Chats");
+                            Query query = dbRef.orderByChild("timestamp").equalTo(msgTimeStamp);
+                            query.addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                    for (DataSnapshot ds : snapshot.getChildren()) {
+                                        if (ds.child("sender").getValue().equals(myUID)) {
+                                            ds.getRef().removeValue();
+                                            Toast.makeText(context, "Đã xoá tin nhắn.", Toast.LENGTH_SHORT).show();
+                                        } else {
+                                            Toast.makeText(context, "Chỉ có thể xoá tin nhắn của bạn.", Toast.LENGTH_SHORT).show();
+                                        }
+                                    }
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError error) {
+
+                                }
+                            });
+                        }
+                    });
+
+                    builder.setNegativeButton("Không", (dialog, which) -> dialog.dismiss());
+
+                    builder.create().show();
+                }
+            });
+        } else {
+            Toast.makeText(context, "Đã có lỗi xảy ra", Toast.LENGTH_SHORT).show();
+        }
+
+        if (position == getItemCount() - 1) {
+            if (chatList.get(position).isSeen()) {
+                myHolder.isSeen.setText("Đã xem");
+            } else {
+                myHolder.isSeen.setText("Đã gửi");
+            }
+        } else {
+            myHolder.isSeen.setVisibility(View.GONE);
         }
     }
 

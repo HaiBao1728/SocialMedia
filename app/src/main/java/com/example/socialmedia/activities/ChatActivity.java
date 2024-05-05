@@ -153,6 +153,7 @@ public class ChatActivity extends AppCompatActivity {
                         String onlineStatus = String.valueOf(ds.child("onlineStatus").getValue());
                         if (onlineStatus.equals("online")) {
                             chatUserStatus.setText(onlineStatus);
+                            checkTypingStatus("noOne");
                         } else {
                             Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("Asia/Ho_Chi_Minh"), Locale.getDefault());
                             cal.setTimeInMillis(Long.parseLong(onlineStatus));
@@ -205,7 +206,7 @@ public class ChatActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                checkTypingStatus("noOne");
+
             }
         });
 
@@ -295,29 +296,36 @@ public class ChatActivity extends AppCompatActivity {
 
     private void sendImageMessage(Uri imageRui) throws IOException {
         notify = true;
-
+        //progress dialog
         ProgressDialog progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Sending image...");
         progressDialog.show();
 
         String timeStamp = "" + System.currentTimeMillis();
+
         String fileNameAndPath = "ChatImages/" + "post/" + timeStamp;
 
+        //get bitmap from image uri
         Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageRui);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
-        byte[] data = baos.toByteArray();
+        byte[] data = baos.toByteArray(); //conver image to bytes
         StorageReference ref = FirebaseStorage.getInstance().getReference().child(fileNameAndPath);
         ref.putBytes(data)
                 .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                     @Override
                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        //image updated
                         progressDialog.dismiss();
+                        //get url of uploaded image
                         Task<Uri> uriTask = taskSnapshot.getStorage().getDownloadUrl();
-                        String downloadUri = uriTask.getResult().toString();
                         while (!uriTask.isSuccessful()) ;
+                        String downloadUri = uriTask.getResult().toString();
+
                         if (uriTask.isSuccessful()) {
+                            //add image uri and other info to database
                             DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+                            //set reuired data
                             HashMap<String, Object> hashMap = new HashMap<>();
                             hashMap.put("sender", myUid);
                             hashMap.put("receiver", hisUid);
@@ -325,8 +333,10 @@ public class ChatActivity extends AppCompatActivity {
                             hashMap.put("timestamp", timeStamp);
                             hashMap.put("type", "image");
                             hashMap.put("isSeen", false);
+                            //put this data to firebease
                             databaseReference.child("Chats").push().setValue(hashMap);
 
+                            //send notification
                             DatabaseReference database = FirebaseDatabase.getInstance().getReference("Users").child(myUid);
                             database.addValueEventListener(new ValueEventListener() {
                                 @Override
@@ -344,6 +354,7 @@ public class ChatActivity extends AppCompatActivity {
                                 }
                             });
 
+                            //    create chatlist node/child in firebase database
                             DatabaseReference chatRef1 = FirebaseDatabase.getInstance().getReference("ChatList")
                                     .child(myUid)
                                     .child(hisUid);
@@ -388,7 +399,7 @@ public class ChatActivity extends AppCompatActivity {
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Log.d("1",e.getMessage());
+                        //failed
                         progressDialog.dismiss();
                     }
                 });
@@ -406,25 +417,17 @@ public class ChatActivity extends AppCompatActivity {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setCustomTitle(textView);
-        //set options to dialog
-        builder.setItems(options, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-
-                if (which == 0) {
-                    System.out.println("Camera");
-
-                    if (!checkCameraPermission()) {
-                        requestCameraPermission();
-                    } else {
-                        pickFromCamera();
-                    }
+        builder.setItems(options, (dialog, which) -> {
+            if (which == 0) {
+                if (!checkCameraPermission()) {
+                    requestCameraPermission();
+                } else {
+                    pickFromCamera();
                 }
-                if (which == 1) {
-                    System.out.println("Gallery");
-                    requestStoragePermission();
-                    pickFromGallery();
-                }
+            }
+            if (which == 1) {
+                requestStoragePermission();
+                pickFromGallery();
             }
         });
 
@@ -436,7 +439,6 @@ public class ChatActivity extends AppCompatActivity {
         cv.put(MediaStore.Images.Media.TITLE, "Temp Pick");
         cv.put(MediaStore.Images.Media.DESCRIPTION, "Temp Desr");
         imgUri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, cv);
-        System.out.println("pick Camera");
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         intent.putExtra(MediaStore.EXTRA_OUTPUT, imgUri);
         startActivityForResult(intent, IMAGE_PICK_CAMERA_CODE);
@@ -514,6 +516,7 @@ public class ChatActivity extends AppCompatActivity {
                     Toast.makeText(ChatActivity.this, "Chặn thành công.", Toast.LENGTH_SHORT).show();
                     blockTextView.setText("Bỏ Chặn");
                     chatLayout.setVisibility(View.GONE);
+                    typeStatus.setVisibility(View.GONE);
                 })
                 .addOnFailureListener(e -> {
                     Toast.makeText(ChatActivity.this, "Đã có lỗi xảy ra", Toast.LENGTH_SHORT).show();
@@ -577,7 +580,7 @@ public class ChatActivity extends AppCompatActivity {
                     ModelChat chat = ds.getValue(ModelChat.class);
                     if (chat.getReceiver().equals(myUid) && chat.getSender().equals(hisUid)) {
                         HashMap<String, Object> hasSeenHasMap = new HashMap<>();
-                        hasSeenHasMap.put("Đã xem", true);
+                        hasSeenHasMap.put("isSeen", true);
                         ds.getRef().updateChildren(hasSeenHasMap);
                     }
                 }
@@ -625,24 +628,29 @@ public class ChatActivity extends AppCompatActivity {
                 System.out.println("CAMERA_REQUEST_CODE");
                 if (grantResults.length > 0) {
                     boolean cameraAccepted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
-                    if (cameraAccepted) {
+                    boolean storageAccepted = grantResults[1] == PackageManager.PERMISSION_GRANTED;
+                    if (cameraAccepted && storageAccepted) {
                         pickFromCamera();
                     }
                 } else {
-                    Toast.makeText(this, "Cần cấp quyền truy cập camera và thư viện", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "Camera và Storage đều yêu cầu quyền truy cập.", Toast.LENGTH_SHORT).show();
                 }
                 break;
             }
             case STORAGE_REQUEST_CODE: {
+                System.out.println("STORAGE_REQUEST_CODE");
                 if (grantResults.length > 0) {
                     boolean storageAccepted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
                     if (storageAccepted) {
                         pickFromGallery();
                     } else {
-                        Toast.makeText(this, "Không được cấp quyền truy cập", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, "Cần quyền truy cập storage.", Toast.LENGTH_SHORT).show();
                     }
+                } else {
+
                 }
             }
+            break;
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
@@ -680,6 +688,15 @@ public class ChatActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
+        String timestamp = String.valueOf(System.currentTimeMillis());
+        checkOnlineStatus(timestamp);
+        checkTypingStatus("noOne");
+        userRefForSeen.removeEventListener(seenListener);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
         String timestamp = String.valueOf(System.currentTimeMillis());
         checkOnlineStatus(timestamp);
         checkTypingStatus("noOne");
