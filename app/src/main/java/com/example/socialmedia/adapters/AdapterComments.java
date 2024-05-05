@@ -3,17 +3,29 @@ package com.example.socialmedia.adapters;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.graphics.Color;
+import android.text.SpannableString;
 import android.text.format.DateFormat;
+import android.text.style.ForegroundColorSpan;
+import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.socialmedia.activities.AddPostActivity;
+import com.example.socialmedia.activities.PostDetailActivity;
+import com.example.socialmedia.activities.ThereProfileActivity;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -76,38 +88,76 @@ public class AdapterComments extends RecyclerView.Adapter<AdapterComments.MyHold
 
         }
 
-        //comment click listener
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                showMoreOptions(v, uid, cid);
+            }
+        });
+    }
 
-                if(myUid.equals(uid)){
+    private void showMoreOptions(View view, String uid, String cid) {
+        String user_comment_id = uid;
+        PopupMenu popupMenu = new PopupMenu(context, view, Gravity.END);
+        if (uid.equals(myUid)){
+            SpannableString s = new SpannableString("Trang cá nhân");
+            s.setSpan(new ForegroundColorSpan(Color.BLACK), 0, s.length(), 0);
+            SpannableString s1 = new SpannableString("Xóa bình luận");
+            s1.setSpan(new ForegroundColorSpan(Color.BLACK), 0, s1.length(), 0);
+            popupMenu.getMenu().add(Menu.NONE, 0, 0, s);
+            popupMenu.getMenu().add(Menu.NONE, 1, 0, s1);
+        }
+        else {
+            SpannableString s = new SpannableString("Trang cá nhân");
+            s.setSpan(new ForegroundColorSpan(Color.BLACK), 0, s.length(), 0);
+            //SpannableString s1 = new SpannableString("Xóa bình luận");
+            //s1.setSpan(new ForegroundColorSpan(Color.BLACK), 0, s1.length(), 0);0);
+            popupMenu.getMenu().add(Menu.NONE, 0, 0, s);
+            //popupMenu.getMenu().add(Menu.NONE, 1, 0, s1);
+        }
 
-                    AlertDialog.Builder builder= new AlertDialog.Builder(v.getRootView().getContext());
-                    builder.setTitle("Delete");
-                    builder.setMessage("Are you sure to delete this comment");
+        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                int id = item.getItemId();
+                if (id == 0) {
+                    /*Intent intent = new Intent(context, ThereProfileActivity.class);
+                    intent.putExtra("uid", user_comment_id);
+                    context.startActivity(intent);*/
+                    goProfile(uid);
+                }
+
+                if (id == 1) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(view.getRootView().getContext());
+                    builder.setTitle("Xóa");
+                    builder.setMessage("Bạn có chắc muốn xóa bình luận này?");
                     builder.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-
                             deleteComment(cid);
                         }
                     });
                     builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            //dismiss dialog
                             dialog.dismiss();
                         }
                     });
 
                     builder.create().show();
-                }else {
 
-                    Toast.makeText(context,"Can't delete other's comment...",Toast.LENGTH_SHORT).show();
                 }
+
+                return false;
             }
         });
+        popupMenu.show();
+    }
+
+    private void goProfile(String uid) {
+        Intent intent = new Intent(context, ThereProfileActivity.class);
+        intent.putExtra("uid", uid);
+        context.startActivity(intent);
     }
 
     private void deleteComment(String cid) {
@@ -137,7 +187,6 @@ public class AdapterComments extends RecyclerView.Adapter<AdapterComments.MyHold
 
     class MyHolder extends RecyclerView.ViewHolder{
 
-        //declare views from row_comments.xml
         ImageView avatarIv;
         TextView nameTv,commentTv,timeTv;
 

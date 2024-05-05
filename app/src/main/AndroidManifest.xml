@@ -53,10 +53,16 @@
             android:name=".activities.AddPostActivity"
             android:exported="false" />
         <activity
+            android:name=".activities.ThereProfileActivity"
+            android:exported="false" />
+        <activity
             android:name=".activities.PostDetailActivity"
             android:exported="false" />
         <activity
             android:name=".activities.PostLikedByActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.SettingsActivity"
             android:exported="false" />
         <activity
             android:name=".activities.ChatActivity"

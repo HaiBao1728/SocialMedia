@@ -33,7 +33,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.messaging.FirebaseMessaging;
 //import com.example.socialmedia.fragment.GroupChatsFragment;
-//import com.example.socialmedia.fragment.ProfileFragment;
+import com.example.socialmedia.fragment.ProfileFragment;
 
 
 public class DashboardActivity extends AppCompatActivity {
@@ -89,12 +89,12 @@ public class DashboardActivity extends AppCompatActivity {
                 return true;
             }
             if (menuItem.getItemId() == R.id.profile) {
-//                actionBar.setTitle("Profile");
-//                ProfileFragment fragment2 = new ProfileFragment();
-//                FragmentTransaction ft2 = getSupportFragmentManager().beginTransaction();
-//                ft2.replace(R.id.container, fragment2, "");
-//                ft2.commit();
-//                return true;
+                actionBar.setTitle("Profile");
+                ProfileFragment fragment2 = new ProfileFragment();
+                FragmentTransaction ft2 = getSupportFragmentManager().beginTransaction();
+                ft2.replace(R.id.container, fragment2, "");
+                ft2.commit();
+                return true;
             }
             if (menuItem.getItemId() == R.id.users) {
                 actionBar.setTitle("Bạn bè");
@@ -121,10 +121,9 @@ public class DashboardActivity extends AppCompatActivity {
     };
 
     private void showMoreOptions() {
-        //popup menu to show more options
+
         PopupMenu popupMenu = new PopupMenu(this, navigationView, Gravity.END);
 
-        //items to show in menu
         SpannableString s = new SpannableString("Notifications");
         s.setSpan(new ForegroundColorSpan(Color.BLACK), 0, s.length(), 0);
         /*SpannableString s1 = new SpannableString("Group Chats");
@@ -132,13 +131,11 @@ public class DashboardActivity extends AppCompatActivity {
         popupMenu.getMenu().add(Menu.NONE, 0, 0, s);
         //popupMenu.getMenu().add(Menu.NONE, 1, 0, s1);
 
-        //menu clicks
         popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 int id= item.getItemId();
                 if(id==0){
-                    //notificaitons clicked
                     actionBar.setTitle("Notification");
                     NotificationsFragment fragment5 = new NotificationsFragment();
                     FragmentTransaction ft5 = getSupportFragmentManager().beginTransaction();
@@ -176,7 +173,7 @@ public class DashboardActivity extends AppCompatActivity {
                         }
                     });
         } else {
-            //user not signed in, go to main activity
+
             startActivity(new Intent(DashboardActivity.this, MainActivity.class));
             finish();
         }

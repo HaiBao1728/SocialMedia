@@ -496,9 +496,9 @@ public class PostDetailActivity extends AppCompatActivity {
                 for (DataSnapshot ds : snapshot.getChildren()) {
                     myName = "" + ds.child("name").getValue();
                     myDp = "" + ds.child("image").getValue();
-                    //set data
+
                     try {
-                        // if image iss received then set
+
                         Picasso.get().load(myDp).placeholder(R.drawable.ic_default).into(cAvatarIv);
 
                     } catch (Exception e) {
@@ -534,16 +534,13 @@ public class PostDetailActivity extends AppCompatActivity {
                     hisName = "" + ds.child("uName").getValue();
                     String commentCount = "" + ds.child("pComments").getValue();
 
-                    //convert timestamp to proper format
                     Calendar calendar = Calendar.getInstance(Locale.getDefault());
                     calendar.setTimeInMillis(Long.parseLong(pTimeStamp));
                     String pTime = DateFormat.format("dd/MM/yyyy hh:mm aa", calendar).toString();
 
-                    //set data
-                    //Tv.setText(title);
                     pDescriptionTv.setText(pDescr);
-                    pLikesTv.setText(pLikes + " Likes");
-                    pCommentTv.setText(commentCount + " Comments");
+                    pLikesTv.setText(pLikes + " Thích");
+                    pCommentTv.setText(commentCount + " Bình luận");
                     pTimeTiv.setText(pTime);
                     uNameTv.setText(hisName);
                     //set image of user who posted
@@ -561,7 +558,7 @@ public class PostDetailActivity extends AppCompatActivity {
                         } catch (Exception e) {
                         }
                     }
-                    //set user image in comment part
+
                     try {
                         Picasso.get().load(hisDp).placeholder(R.drawable.ic_default).into(cAvatarIv);
                     } catch (Exception e) {

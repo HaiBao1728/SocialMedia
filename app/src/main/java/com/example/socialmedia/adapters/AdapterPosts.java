@@ -29,6 +29,7 @@ import androidx.annotation.NonNull;
 import androidx.core.content.FileProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.socialmedia.activities.ThereProfileActivity;
 import com.example.socialmedia.models.ModelPost;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -195,8 +196,8 @@ public class AdapterPosts extends RecyclerView.Adapter<AdapterPosts.MyHolder> {
         holder.profileLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(context, PostLikedByActivity.class);
-                intent.putExtra("postId", pId);
+                Intent intent = new Intent(context, ThereProfileActivity.class);
+                intent.putExtra("uid", uid);
                 context.startActivity(intent);
             }
         });
@@ -294,11 +295,11 @@ public class AdapterPosts extends RecyclerView.Adapter<AdapterPosts.MyHolder> {
     private void showMoreOptions(ImageButton moreBtn, String uid, String myUid, String pId, String pImage) {
         PopupMenu popupMenu = new PopupMenu(context, moreBtn, Gravity.END);
         if (uid.equals(myUid)){
-            SpannableString s = new SpannableString("Delete");
+            SpannableString s = new SpannableString("Xóa");
             s.setSpan(new ForegroundColorSpan(Color.BLACK), 0, s.length(), 0);
-            SpannableString s1 = new SpannableString("Edit");
+            SpannableString s1 = new SpannableString("Sửa");
             s1.setSpan(new ForegroundColorSpan(Color.BLACK), 0, s1.length(), 0);
-            SpannableString s2 = new SpannableString("View Detail");
+            SpannableString s2 = new SpannableString("Xem chi tiết");
             s2.setSpan(new ForegroundColorSpan(Color.BLACK), 0, s2.length(), 0);
             popupMenu.getMenu().add(Menu.NONE, 0, 0, s);
             popupMenu.getMenu().add(Menu.NONE, 1, 0, s1);

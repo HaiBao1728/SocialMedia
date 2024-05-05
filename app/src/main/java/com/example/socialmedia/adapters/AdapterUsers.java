@@ -15,6 +15,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.socialmedia.activities.DashboardActivity;
+import com.example.socialmedia.activities.ThereProfileActivity;
 import com.example.socialmedia.models.ModelUser;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -131,9 +132,9 @@ public class AdapterUsers extends RecyclerView.Adapter<AdapterUsers.MyHolder> {
                                 return;
                             }
                         }
-//                        Intent intent = new Intent(context, ThereProfileActivity.class);
-//                        intent.putExtra("uid", hisUID);
-//                        context.startActivity(intent);
+                        Intent intent = new Intent(context, ThereProfileActivity.class);
+                        intent.putExtra("uid", hisUID);
+                        context.startActivity(intent);
                     }
 
                     @Override
