@@ -106,9 +106,9 @@ public class HomeFragment extends Fragment {
                     firebaseAuth.signOut();
                     checkUserStatus();
                 } else if (id == R.id.add_post) {
+                    System.out.println("vrdgs");
                     startActivity(new Intent(getActivity(), AddPostActivity.class));
                 } else if (id == R.id.settings) {
-                    //go to settings activity
                     startActivity(new Intent(getActivity(), SettingsActivity.class));
                 }
 
@@ -233,10 +233,10 @@ public class HomeFragment extends Fragment {
         } else if (id == R.id.settings) {
             //go to settings activity
             startActivity(new Intent(getActivity(), SettingsActivity.class));
-        }*//*else if(id==R.id.add_group_chat){
+        }else if(id==R.id.add_group_chat){
             //got to settings activity
             startActivity(new Intent(getActivity(), GroupCreateActivity.class));
-        }*//*
+        }
         return super.onOptionsItemSelected(item);
     }*/
 }

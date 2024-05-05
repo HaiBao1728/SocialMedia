@@ -74,12 +74,12 @@ public class DashboardActivity extends AppCompatActivity {
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
             if (menuItem.getItemId() == R.id.home) {
-//                actionBar.setTitle("Home");
-//                HomeFragment fragment1 = new HomeFragment();
-//                FragmentTransaction ft1 = getSupportFragmentManager().beginTransaction();
-//                ft1.replace(R.id.container, fragment1, "");
-//                ft1.commit();
-//                return true;
+                actionBar.setTitle("Home");
+                HomeFragment fragment1 = new HomeFragment();
+                FragmentTransaction ft1 = getSupportFragmentManager().beginTransaction();
+                ft1.replace(R.id.container, fragment1, "");
+                ft1.commit();
+                return true;
             }
             if (menuItem.getItemId() == R.id.profile) {
 //                actionBar.setTitle("Profile");
