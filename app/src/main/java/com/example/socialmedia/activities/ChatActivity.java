@@ -34,11 +34,18 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.net.Uri;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.socialmedia.R;
 import com.example.socialmedia.adapters.AdapterChat;
 import com.example.socialmedia.models.ModelChat;
+import com.example.socialmedia.notifications.Data;
+import com.example.socialmedia.notifications.Sender;
+import com.example.socialmedia.notifications.Token;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -50,9 +57,15 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.firebase.messaging.FirebaseMessagingException;
+import com.google.firebase.messaging.RemoteMessage;
+import com.google.firebase.messaging.Notification;
+import com.google.api.core.ApiFuture;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.google.gson.Gson;
 import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
@@ -62,11 +75,14 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.TimeZone;
 
 import com.example.socialmedia.models.ModelUser;
 
 import org.jetbrains.annotations.NotNull;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class ChatActivity extends AppCompatActivity {
     Toolbar toolbar;
@@ -474,7 +490,32 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     private void senNotification(String hisUid, String name, String message) {
+        DatabaseReference allTokens = FirebaseDatabase.getInstance().getReference("Tokens");
+        Query query = allTokens.orderByKey().equalTo(hisUid);
+        query.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot ds : snapshot.getChildren()) {
+                    Token token = ds.getValue(Token.class);
+                    if (token.getToken() != null) {
+                        Notification notification = Notification.builder().setTitle(name).setBody(message).build();
+                        RemoteMessage remoteMessage = RemoteMessage.builder()
+                                .setToken(registrationToken)
+                                .setNotification(notification)
+                                .build();
+                        String response = FirebaseMessaging.getInstance().send(mess);
+                        System.out.println("Successfully sent notification: " + response);
+                    } else {
+                        System.out.println("No registration token available for user. Unable to send notification.");
+                    }
+                }
+            }
 
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
     }
 
     private void unBlockUser() {
