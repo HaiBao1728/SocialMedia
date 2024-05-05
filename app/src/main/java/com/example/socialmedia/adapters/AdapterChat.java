@@ -52,7 +52,7 @@ public class AdapterChat extends RecyclerView.Adapter<AdapterChat.MyHolder> {
     @Override
     public void onBindViewHolder(@NonNull AdapterChat.MyHolder myHolder, int position) {
         String message = chatList.get(position).getMessage();
-        String timeStamp = chatList.get(position).getTimestamp();
+        String timeStamp = chatList.get(position).getTimeStamp();
         String type = chatList.get(position).getType();
 
         Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("Asia/Ho_Chi_Minh"), Locale.getDefault());
@@ -76,6 +76,10 @@ public class AdapterChat extends RecyclerView.Adapter<AdapterChat.MyHolder> {
             Picasso.get().load(imgUrl).into(myHolder.messageImage);
         } catch (Exception ignored) {
 
+        }
+
+        if(position < getItemCount() - 1){
+            myHolder.isSeen.setVisibility(View.INVISIBLE);
         }
     }
 

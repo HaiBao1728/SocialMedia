@@ -1,13 +1,19 @@
 package com.example.socialmedia.activities;
 
 import android.Manifest;
+import android.app.ProgressDialog;
+import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.format.DateFormat;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -16,6 +22,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -32,6 +39,9 @@ import com.android.volley.toolbox.Volley;
 import com.example.socialmedia.R;
 import com.example.socialmedia.adapters.AdapterChat;
 import com.example.socialmedia.models.ModelChat;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -40,8 +50,13 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -50,6 +65,8 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 import com.example.socialmedia.models.ModelUser;
+
+import org.jetbrains.annotations.NotNull;
 
 public class ChatActivity extends AppCompatActivity {
     Toolbar toolbar;
@@ -62,6 +79,7 @@ public class ChatActivity extends AppCompatActivity {
     EditText messageEditText;
     TextView blockTextView;
     RelativeLayout chatLayout;
+    TextView typeStatus;
     FirebaseAuth mAuth;
     FirebaseDatabase firebaseDatabase;
     DatabaseReference userDbRef;
@@ -101,6 +119,7 @@ public class ChatActivity extends AppCompatActivity {
         messageEditText = findViewById(R.id.messageEditText);
         blockTextView = findViewById(R.id.blockTextView);
         chatLayout = findViewById(R.id.chatLayout);
+        typeStatus = findViewById(R.id.typeStatus);
 
         cameraPermissions = new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE};
         storagePermissions = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
@@ -129,7 +148,7 @@ public class ChatActivity extends AppCompatActivity {
                     String typingStatus = String.valueOf(ds.child("typingTo").getValue());
 
                     if (typingStatus.equals(myUid)) {
-                        chatUserStatus.setText("Đang nhập...");
+                        typeStatus.setVisibility(View.VISIBLE);
                     } else {
                         String onlineStatus = String.valueOf(ds.child("onlineStatus").getValue());
                         if (onlineStatus.equals("online")) {
@@ -139,8 +158,8 @@ public class ChatActivity extends AppCompatActivity {
                             cal.setTimeInMillis(Long.parseLong(onlineStatus));
                             String dateTime = DateFormat.format("dd/MM/yyyy hh:mm aa", cal).toString();
                             chatUserStatus.setText("Truy cập lần cuối vào: " + dateTime);
-
                         }
+                        typeStatus.setVisibility(View.GONE);
                     }
                     chatUserName.setText(name);
                     try {
@@ -186,7 +205,7 @@ public class ChatActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-
+                checkTypingStatus("noOne");
             }
         });
 
@@ -274,26 +293,182 @@ public class ChatActivity extends AppCompatActivity {
         });
     }
 
+    private void sendImageMessage(Uri imageRui) throws IOException {
+        notify = true;
+
+        ProgressDialog progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Sending image...");
+        progressDialog.show();
+
+        String timeStamp = "" + System.currentTimeMillis();
+        String fileNameAndPath = "ChatImages/" + "post/" + timeStamp;
+
+        Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageRui);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
+        byte[] data = baos.toByteArray();
+        StorageReference ref = FirebaseStorage.getInstance().getReference().child(fileNameAndPath);
+        ref.putBytes(data)
+                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        progressDialog.dismiss();
+                        Task<Uri> uriTask = taskSnapshot.getStorage().getDownloadUrl();
+                        String downloadUri = uriTask.getResult().toString();
+                        while (!uriTask.isSuccessful()) ;
+                        if (uriTask.isSuccessful()) {
+                            DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+                            HashMap<String, Object> hashMap = new HashMap<>();
+                            hashMap.put("sender", myUid);
+                            hashMap.put("receiver", hisUid);
+                            hashMap.put("message", downloadUri);
+                            hashMap.put("timestamp", timeStamp);
+                            hashMap.put("type", "image");
+                            hashMap.put("isSeen", false);
+                            databaseReference.child("Chats").push().setValue(hashMap);
+
+                            DatabaseReference database = FirebaseDatabase.getInstance().getReference("Users").child(myUid);
+                            database.addValueEventListener(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                    ModelUser user = snapshot.getValue(ModelUser.class);
+                                    if (notify) {
+                                        senNotification(hisUid, user.getName(), "Sent you a photo...");
+                                    }
+                                    notify = false;
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError error) {
+
+                                }
+                            });
+
+                            DatabaseReference chatRef1 = FirebaseDatabase.getInstance().getReference("ChatList")
+                                    .child(myUid)
+                                    .child(hisUid);
+
+                            chatRef1.addValueEventListener(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                    if (!snapshot.exists()) {
+                                        chatRef1.child("id").setValue(hisUid);
+                                    }
+
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError error) {
+
+                                }
+                            });
+
+                            DatabaseReference chatRef2 = FirebaseDatabase.getInstance().getReference("ChatList")
+                                    .child(hisUid)
+                                    .child(myUid);
+
+                            chatRef2.addValueEventListener(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                    if (!snapshot.exists()) {
+                                        chatRef2.child("id").setValue(myUid);
+                                    }
+
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError error) {
+
+                                }
+                            });
+
+                        }
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.d("1",e.getMessage());
+                        progressDialog.dismiss();
+                    }
+                });
+    }
+
     private void showImagePickDialog() {
-        String[] options = {"Camera", "Gallery"};
+        String[] options = {"Máy ảnh", "Thư viện"};
+
+        TextView textView = new TextView(this);
+        textView.setText("Chọn ảnh từ");
+        textView.setPadding(20, 30, 20, 30);
+        textView.setTextSize(20F);
+        textView.setBackgroundColor(Color.WHITE);
+        textView.setTextColor(Color.BLACK);
+
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setCustomTitle(textView);
+        //set options to dialog
         builder.setItems(options, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-//                if (which == 0) {
-//                    if (!checkCameraPermission()) {
-//                        requestCameraPermission();
-//                    } else {
-//                        pickFromCamera();
-//                    }
-//                }
-//                if (which == 1) {
-//                    requestStoragePermission();
-//                    pickFromGallery();
-//                }
+
+                if (which == 0) {
+                    System.out.println("Camera");
+
+                    if (!checkCameraPermission()) {
+                        requestCameraPermission();
+                    } else {
+                        pickFromCamera();
+                    }
+                }
+                if (which == 1) {
+                    System.out.println("Gallery");
+                    requestStoragePermission();
+                    pickFromGallery();
+                }
             }
         });
+
         builder.create().show();
+    }
+
+    private void pickFromCamera() {
+        ContentValues cv = new ContentValues();
+        cv.put(MediaStore.Images.Media.TITLE, "Temp Pick");
+        cv.put(MediaStore.Images.Media.DESCRIPTION, "Temp Desr");
+        imgUri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, cv);
+        System.out.println("pick Camera");
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, imgUri);
+        startActivityForResult(intent, IMAGE_PICK_CAMERA_CODE);
+    }
+
+    private void pickFromGallery() {
+        System.out.println("pick Gallery");
+        Intent intent = new Intent(Intent.ACTION_PICK);
+        intent.setType("image/*");
+        startActivityForResult(intent, IMAGE_PICK_GALLERY_CODE);
+    }
+
+    private boolean checkStoragePermission() {
+        boolean result = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                == (PackageManager.PERMISSION_GRANTED);
+        return result;
+    }
+
+    private void requestStoragePermission() {
+        ActivityCompat.requestPermissions(this, storagePermissions, STORAGE_REQUEST_CODE);
+
+    }
+
+    private boolean checkCameraPermission() {
+        boolean result = ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+                == (PackageManager.PERMISSION_GRANTED);
+        return result;
+    }
+
+    private void requestCameraPermission() {
+        ActivityCompat.requestPermissions(this, cameraPermissions, CAMERA_REQUEST_CODE);
+
     }
 
     private void senNotification(String hisUid, String name, String message) {
@@ -417,21 +592,6 @@ public class ChatActivity extends AppCompatActivity {
 
     }
 
-    private void requestStoragePermission() {
-        ActivityCompat.requestPermissions(this, storagePermissions, STORAGE_REQUEST_CODE);
-
-    }
-
-    private void requestCameraPermission() {
-        ActivityCompat.requestPermissions(this, cameraPermissions, CAMERA_REQUEST_CODE);
-    }
-
-    private boolean checkCameraPermission() {
-        boolean result = ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
-                == (PackageManager.PERMISSION_GRANTED);
-        return result;
-    }
-
     private void checkUserStatus() {
         FirebaseUser user = mAuth.getCurrentUser();
         if (user != null) {
@@ -454,6 +614,60 @@ public class ChatActivity extends AppCompatActivity {
         HashMap<String, Object> hashMap = new HashMap<>();
         hashMap.put("typingTo", typing);
         dbRef.updateChildren(hashMap);
+    }
+
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull @NotNull String[] permissions, @NonNull @NotNull int[] grantResults) {
+
+        switch (requestCode) {
+            case CAMERA_REQUEST_CODE: {
+                System.out.println("CAMERA_REQUEST_CODE");
+                if (grantResults.length > 0) {
+                    boolean cameraAccepted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
+                    if (cameraAccepted) {
+                        pickFromCamera();
+                    }
+                } else {
+                    Toast.makeText(this, "Cần cấp quyền truy cập camera và thư viện", Toast.LENGTH_SHORT).show();
+                }
+                break;
+            }
+            case STORAGE_REQUEST_CODE: {
+                if (grantResults.length > 0) {
+                    boolean storageAccepted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
+                    if (storageAccepted) {
+                        pickFromGallery();
+                    } else {
+                        Toast.makeText(this, "Không được cấp quyền truy cập", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+        }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable @org.jetbrains.annotations.Nullable Intent data) {
+        if (resultCode == RESULT_OK) {
+            if (requestCode == IMAGE_PICK_GALLERY_CODE) {
+                imgUri = data.getData();
+                try {
+                    sendImageMessage(imgUri);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+
+            } else if (requestCode == IMAGE_PICK_CAMERA_CODE) {
+                try {
+                    sendImageMessage(imgUri);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override
