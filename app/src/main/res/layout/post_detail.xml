@@ -149,8 +149,7 @@
                 android:id="@+id/commentRecyclerView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                tools:listitem="@layout/comment"
-                />
+                tools:listitem="@layout/comment" />
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

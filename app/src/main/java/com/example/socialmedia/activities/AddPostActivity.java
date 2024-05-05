@@ -30,6 +30,8 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
@@ -532,7 +534,30 @@ public class AddPostActivity extends AppCompatActivity {
     }
 
     private void sendPostNotification(JSONObject notificationJo) {
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest("https://fcm.googleapis.com/fcm/send", notificationJo,
+
+// Use the JsonObjectRequest.Builder to construct the request.
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, "https://fcm.googleapis.com/v1/projects/myproject-b5ae1/messages:send", notificationJo,
+                response -> {
+                    Log.d("FCM_RESPONSE", "onReponse: " + response.toString());
+                },
+                error -> {
+                    Toast.makeText(AddPostActivity.this, error.toString(), Toast.LENGTH_SHORT).show();
+                }) {
+            public Map<String, String> getHeaders() throws AuthFailureError {
+
+                String apiKey = getResources().getString(R.string.key_message);
+
+                Map<String, String> headers = new HashMap<>();
+                headers.put("Content-Type", "application/json");
+                headers.put("Authorization", "key="+apiKey);
+
+                return headers;
+            }
+
+        };
+
+
+        /*JsonObjectRequest jsonObjectRequest = new JsonObjectRequest("https://fcm.googleapis.com/fcm/send", notificationJo,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
@@ -555,9 +580,9 @@ public class AddPostActivity extends AppCompatActivity {
 
                 return headers;
             }
-        };
+        };*/
 
-        Volley.newRequestQueue(this).add(jsonObjectRequest);
+        Volley.newRequestQueue(this).add(request);
     }
 
     private void showImagePickDialog() {

@@ -53,6 +53,12 @@
             android:name=".activities.AddPostActivity"
             android:exported="false" />
         <activity
+            android:name=".activities.PostDetailActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.PostLikedByActivity"
+            android:exported="false" />
+        <activity
             android:name=".activities.ChatActivity"
             android:exported="false"
             android:theme="@style/AppThemeNo"/>

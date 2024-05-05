@@ -7,15 +7,22 @@ import androidx.fragment.app.FragmentTransaction;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 
 import com.example.socialmedia.fragment.ChatListFragment;
 import com.example.socialmedia.fragment.HomeFragment;
+import com.example.socialmedia.fragment.NotificationsFragment;
 import com.example.socialmedia.fragment.UsersFragment;
 import com.example.socialmedia.notifications.Token;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import android.content.SharedPreferences;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
+import android.view.Gravity;
+import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.PopupMenu;
 import android.widget.Toast;
 
 import com.google.firebase.FirebaseApp;
@@ -106,50 +113,51 @@ public class DashboardActivity extends AppCompatActivity {
                 return true;
             }
             if (menuItem.getItemId() == R.id.more){
-                //showMoreOptions();
+                showMoreOptions();
                 return true;
             }
             return false;
         }
     };
 
-//    private void showMoreOptions() {
-//        //popup menu to show more options
-//        PopupMenu popupMenu = new PopupMenu(this, navigationView, Gravity.END);
-//        //items to show in menu
-//        SpannableString s = new SpannableString("Notifications");
-//        s.setSpan(new ForegroundColorSpan(Color.BLACK), 0, s.length(), 0);
-//        SpannableString s1 = new SpannableString("Group Chats");
-//        s1.setSpan(new ForegroundColorSpan(Color.BLACK), 0, s1.length(), 0);
-//        popupMenu.getMenu().add(Menu.NONE, 0, 0, s);
-//        popupMenu.getMenu().add(Menu.NONE, 1, 0, s1);
-//
-//        //menu clicks
-//        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-//            @Override
-//            public boolean onMenuItemClick(MenuItem item) {
-//                int id= item.getItemId();
-//                if(id==0){
-//                    //notificaitons clicked
-//                    actionBar.setTitle("Notification");
-//                    NotificationsFragment fragment5 = new NotificationsFragment();
-//                    FragmentTransaction ft5 = getSupportFragmentManager().beginTransaction();
-//                    ft5.replace(R.id.container, fragment5, "");
-//                    ft5.commit();
-//
-//                }else if(id==1){
-//                    //group chats clicked
-//                    actionBar.setTitle("Group Chats");
-//                    GroupChatsFragment fragment6 = new GroupChatsFragment();
-//                    FragmentTransaction ft6 = getSupportFragmentManager().beginTransaction();
-//                    ft6.replace(R.id.container, fragment6, "");
-//                    ft6.commit();
-//                }
-//                return false;
-//            }
-//        });
-//        popupMenu.show();
-//    }
+    private void showMoreOptions() {
+        //popup menu to show more options
+        PopupMenu popupMenu = new PopupMenu(this, navigationView, Gravity.END);
+
+        //items to show in menu
+        SpannableString s = new SpannableString("Notifications");
+        s.setSpan(new ForegroundColorSpan(Color.BLACK), 0, s.length(), 0);
+        /*SpannableString s1 = new SpannableString("Group Chats");
+        s1.setSpan(new ForegroundColorSpan(Color.BLACK), 0, s1.length(), 0);*/
+        popupMenu.getMenu().add(Menu.NONE, 0, 0, s);
+        //popupMenu.getMenu().add(Menu.NONE, 1, 0, s1);
+
+        //menu clicks
+        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                int id= item.getItemId();
+                if(id==0){
+                    //notificaitons clicked
+                    actionBar.setTitle("Notification");
+                    NotificationsFragment fragment5 = new NotificationsFragment();
+                    FragmentTransaction ft5 = getSupportFragmentManager().beginTransaction();
+                    ft5.replace(R.id.container, fragment5, "");
+                    ft5.commit();
+
+                }/*else if(id==1){
+                    //group chats clicked
+                    actionBar.setTitle("Group Chats");
+                    GroupChatsFragment fragment6 = new GroupChatsFragment();
+                    FragmentTransaction ft6 = getSupportFragmentManager().beginTransaction();
+                    ft6.replace(R.id.container, fragment6, "");
+                    ft6.commit();
+                }*/
+                return false;
+            }
+        });
+        popupMenu.show();
+    }
 
     private void checkUserStatus() {
         FirebaseUser user = firebaseAuth.getCurrentUser();
