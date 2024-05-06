@@ -260,7 +260,7 @@ public class ChatActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 ModelUser user = snapshot.getValue(ModelUser.class);
                 if (notify) {
-                    senNotification(hisUid, user.getName(), message);
+                    sendNotification(hisUid, user.getName(), message);
                 }
                 notify = false;
             }
@@ -356,7 +356,7 @@ public class ChatActivity extends AppCompatActivity {
                                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                                     ModelUser user = snapshot.getValue(ModelUser.class);
                                     if (notify) {
-                                        senNotification(hisUid, user.getName(), "Sent you a photo...");
+                                        sendNotification(hisUid, user.getName(), "Đã gửi 1 ảnh.");
                                     }
                                     notify = false;
                                 }
@@ -486,7 +486,7 @@ public class ChatActivity extends AppCompatActivity {
 
     }
 
-    private void senNotification(String hisUid, String name, String message) {
+    private void sendNotification(String hisUid, String name, String message) {
         DatabaseReference allTokens = FirebaseDatabase.getInstance().getReference("Tokens");
         Query query = allTokens.orderByKey().equalTo(hisUid);
         query.addValueEventListener(new ValueEventListener() {
@@ -497,8 +497,8 @@ public class ChatActivity extends AppCompatActivity {
                     if (token.getToken() != null && token.getToken() != null) {
                         Data data = new Data(
                                 myUid,
-                                name + ": " + message,
-                                "New Message",
+                                message,
+                                name,
                                 hisUid,
                                 "ChatNotification",
                                 R.drawable.baseline_tag_faces_24
