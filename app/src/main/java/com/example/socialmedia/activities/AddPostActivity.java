@@ -120,8 +120,8 @@ public class AddPostActivity extends AppCompatActivity {
         String editPostId = "" + intent.getStringExtra("editPostId");
 
         if (isUpdateKey.equals("editPost")) {
-            actionBar.setTitle("Cập nhật bài viết");
-            uploadBtn.setText("Cập nhật");
+            actionBar.setTitle("Chỉnh sửa bài viết");
+            uploadBtn.setText("Chỉnh sửa");
             loadPostData(editPostId);
         }
         else {
@@ -350,7 +350,7 @@ public class AddPostActivity extends AppCompatActivity {
                 for (DataSnapshot ds : snapshot.getChildren()) {
                     //editTitle = "" + ds.child("pTitle").getValue();
                     editDescription = "" + ds.child("pDescr").getValue();
-                    editDescription = "" + ds.child("pImage").getValue();
+                    editImage = "" + ds.child("pImage").getValue();
 
                     //titleEt.setText(editTitle);
                     descriptionEt.setText(editDescription);
@@ -424,15 +424,15 @@ public class AddPostActivity extends AppCompatActivity {
                                         pd.dismiss();
                                         Toast.makeText(AddPostActivity.this, "Post published", Toast.LENGTH_SHORT).show();
                                         //reset views
-                                        titleEt.setText("");
+                                        //titleEt.setText("");
                                         descriptionEt.setText("");
                                         imageIv.setImageURI(null);
                                         image_rui = null;
 
                                         //send notification
                                         prepareNotification(
-                                                "" + timeStamp,//since we are using timestamp for post id
-                                                "" + name + " added new post",
+                                                "" + timeStamp,
+                                                "" + name + " đăng tải bài viết mới",
                                                 "" + description + "\n" + description,
                                                 "PostNotification",
                                                 "POST"
@@ -481,7 +481,7 @@ public class AddPostActivity extends AppCompatActivity {
                             pd.dismiss();
                             Toast.makeText(AddPostActivity.this, "Post published", Toast.LENGTH_SHORT).show();
                             //reset views
-                            titleEt.setText("");
+                            //titleEt.setText("");
                             descriptionEt.setText("");
                             imageIv.setImageURI(null);
                             image_rui = null;
@@ -536,7 +536,7 @@ public class AddPostActivity extends AppCompatActivity {
     private void sendPostNotification(JSONObject notificationJo) {
 
 // Use the JsonObjectRequest.Builder to construct the request.
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, "https://fcm.googleapis.com/v1/projects/myproject-b5ae1/messages:send", notificationJo,
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, "https://fcm.googleapis.com/fcm/send", notificationJo,
                 response -> {
                     Log.d("FCM_RESPONSE", "onReponse: " + response.toString());
                 },
