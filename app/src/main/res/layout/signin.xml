@@ -4,6 +4,7 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:padding="20dp"
+    android:background="@drawable/login_background_img"
     android:gravity="center">
 
 
@@ -11,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textAlignment="center"
-        android:textColor="@color/primary"
+        android:textColor="@color/black"
         android:textSize="25dp"
         android:text="ĐĂNG KÝ"
         android:layout_above="@+id/emailTIL"
@@ -120,6 +121,6 @@
         android:layout_toEndOf="@+id/subLoginText"
         android:text="ĐĂNG NHẬP"
         android:textStyle="bold"
-        android:textColor="@color/primary"
+        android:textColor="@color/red"
         android:textSize="20dp" />
 </RelativeLayout>
