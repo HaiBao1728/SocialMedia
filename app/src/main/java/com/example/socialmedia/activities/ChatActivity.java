@@ -35,6 +35,7 @@ import android.net.Uri;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -58,10 +59,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.messaging.FirebaseMessaging;
-import com.google.firebase.messaging.FirebaseMessagingException;
-import com.google.firebase.messaging.RemoteMessage;
-import com.google.firebase.messaging.Notification;
-import com.google.api.core.ApiFuture;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -497,14 +494,36 @@ public class ChatActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for (DataSnapshot ds : snapshot.getChildren()) {
                     Token token = ds.getValue(Token.class);
-                    if (token.getToken() != null) {
-                        Notification notification = Notification.builder().setTitle(name).setBody(message).build();
-                        RemoteMessage remoteMessage = RemoteMessage.builder()
-                                .setToken(registrationToken)
-                                .setNotification(notification)
-                                .build();
-                        String response = FirebaseMessaging.getInstance().send(mess);
-                        System.out.println("Successfully sent notification: " + response);
+                    if (token.getToken() != null && token.getToken() != null) {
+                        Data data = new Data(
+                                myUid,
+                                name + ": " + message,
+                                "New Message",
+                                hisUid,
+                                "ChatNotification",
+                                R.drawable.baseline_tag_faces_24
+                        );
+                        Sender sender = new Sender(data, token.getToken());
+                        try {
+                            JSONObject senderJsonObj = new JSONObject(new Gson().toJson(sender));
+                            JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST,"https://fcm.googleapis.com/fcm/send", senderJsonObj,
+                                    response -> {
+                                        Log.d("JSON_RESPONSE", "onResponse: " + response.toString());
+                                    }, error -> Log.d("JSON_REPONSE", "onResponse: " + error.toString())) {
+                                @Override
+                                public Map<String, String> getHeaders() {
+                                    String apiKey = getResources().getString(R.string.key_message);
+                                    Map<String, String> headers = new HashMap<>();
+                                    headers.put("Content-Type", "application/json");
+                                    headers.put("Authorization", "key="+apiKey);
+                                    Log.d("headers",headers.toString());
+                                    return headers;
+                                }
+                            };
+                            requestQueue.add(jsonObjectRequest);
+                        } catch (JSONException e) {
+                            Log.d("Error Send Noti", e.toString());
+                        }
                     } else {
                         System.out.println("No registration token available for user. Unable to send notification.");
                     }
