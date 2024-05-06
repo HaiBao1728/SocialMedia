@@ -34,11 +34,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.net.Uri;
 import android.widget.Toast;
 
-import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.socialmedia.R;
@@ -58,7 +55,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -322,91 +318,85 @@ public class ChatActivity extends AppCompatActivity {
         Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageRui);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
-        byte[] data = baos.toByteArray(); //conver image to bytes
+        byte[] data = baos.toByteArray();
         StorageReference ref = FirebaseStorage.getInstance().getReference().child(fileNameAndPath);
         ref.putBytes(data)
-                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                    @Override
-                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                        //image updated
-                        progressDialog.dismiss();
-                        //get url of uploaded image
-                        Task<Uri> uriTask = taskSnapshot.getStorage().getDownloadUrl();
-                        while (!uriTask.isSuccessful()) ;
-                        String downloadUri = uriTask.getResult().toString();
+                .addOnSuccessListener(taskSnapshot -> {
+                    progressDialog.dismiss();
+                    Task<Uri> uriTask = taskSnapshot.getStorage().getDownloadUrl();
+                    while (!uriTask.isSuccessful()) ;
+                    String downloadUri = uriTask.getResult().toString();
 
-                        if (uriTask.isSuccessful()) {
-                            //add image uri and other info to database
-                            DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
-                            //set reuired data
-                            HashMap<String, Object> hashMap = new HashMap<>();
-                            hashMap.put("sender", myUid);
-                            hashMap.put("receiver", hisUid);
-                            hashMap.put("message", downloadUri);
-                            hashMap.put("timestamp", timeStamp);
-                            hashMap.put("type", "image");
-                            hashMap.put("isSeen", false);
-                            //put this data to firebease
-                            databaseReference.child("Chats").push().setValue(hashMap);
+                    if (uriTask.isSuccessful()) {
+                        //add image uri and other info to database
+                        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+                        //set reuired data
+                        HashMap<String, Object> hashMap = new HashMap<>();
+                        hashMap.put("sender", myUid);
+                        hashMap.put("receiver", hisUid);
+                        hashMap.put("message", downloadUri);
+                        hashMap.put("timestamp", timeStamp);
+                        hashMap.put("type", "image");
+                        hashMap.put("isSeen", false);
+                        //put this data to firebease
+                        databaseReference.child("Chats").push().setValue(hashMap);
 
-                            //send notification
-                            DatabaseReference database = FirebaseDatabase.getInstance().getReference("Users").child(myUid);
-                            database.addValueEventListener(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                    ModelUser user = snapshot.getValue(ModelUser.class);
-                                    if (notify) {
-                                        sendNotification(hisUid, user.getName(), "Đã gửi 1 ảnh.");
-                                    }
-                                    notify = false;
+                        //send notification
+                        DatabaseReference database = FirebaseDatabase.getInstance().getReference("Users").child(myUid);
+                        database.addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                ModelUser user = snapshot.getValue(ModelUser.class);
+                                if (notify) {
+                                    sendNotification(hisUid, user.getName(), "Đã gửi 1 ảnh.");
+                                }
+                                notify = false;
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+
+                            }
+                        });
+
+                        DatabaseReference chatRef1 = FirebaseDatabase.getInstance().getReference("ChatList")
+                                .child(myUid)
+                                .child(hisUid);
+
+                        chatRef1.addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                if (!snapshot.exists()) {
+                                    chatRef1.child("id").setValue(hisUid);
                                 }
 
-                                @Override
-                                public void onCancelled(@NonNull DatabaseError error) {
+                            }
 
-                                }
-                            });
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
 
-                            //    create chatlist node/child in firebase database
-                            DatabaseReference chatRef1 = FirebaseDatabase.getInstance().getReference("ChatList")
-                                    .child(myUid)
-                                    .child(hisUid);
+                            }
+                        });
 
-                            chatRef1.addValueEventListener(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                    if (!snapshot.exists()) {
-                                        chatRef1.child("id").setValue(hisUid);
-                                    }
+                        DatabaseReference chatRef2 = FirebaseDatabase.getInstance().getReference("ChatList")
+                                .child(hisUid)
+                                .child(myUid);
 
-                                }
-
-                                @Override
-                                public void onCancelled(@NonNull DatabaseError error) {
-
-                                }
-                            });
-
-                            DatabaseReference chatRef2 = FirebaseDatabase.getInstance().getReference("ChatList")
-                                    .child(hisUid)
-                                    .child(myUid);
-
-                            chatRef2.addValueEventListener(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                    if (!snapshot.exists()) {
-                                        chatRef2.child("id").setValue(myUid);
-                                    }
-
+                        chatRef2.addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                if (!snapshot.exists()) {
+                                    chatRef2.child("id").setValue(myUid);
                                 }
 
-                                @Override
-                                public void onCancelled(@NonNull DatabaseError error) {
+                            }
 
-                                }
-                            });
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
 
-                        }
+                            }
+                        });
+
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -489,6 +479,7 @@ public class ChatActivity extends AppCompatActivity {
     private void sendNotification(String hisUid, String name, String message) {
         DatabaseReference allTokens = FirebaseDatabase.getInstance().getReference("Tokens");
         Query query = allTokens.orderByKey().equalTo(hisUid);
+        Log.d("message",message);
         query.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
